@@ -1,0 +1,16 @@
+---
+type: intent
+name: ApplicationsMode_openAction
+slots:
+  - name: app
+    entity: app
+utterances:
+  - '[app](anki)'
+  - '[app](email)'
+  - Open [app](terminal)
+
+---
+type: intent
+name: ApplicationsMode_showCommandsAction
+utterances:
+  - commands

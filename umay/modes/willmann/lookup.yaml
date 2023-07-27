@@ -1,0 +1,11 @@
+---
+type: intent
+name: LookupMode_lookupAction
+slots:
+  - name: lan
+    entity: lan
+utterances:
+  - '[lan](english)'
+  - '[lan](russian)'
+  - definition [lan](english)
+  - definition [lan](russian)
