@@ -1,8 +1,10 @@
 from setuptools import setup, find_packages
 
-setup(
-    name="umay",
-    description="Umay: text to command",
-    version="0.0.1",
-    package_data={'':['*.*']},
-)
+setup(name="Umay",
+      version="0.0.1",
+      description="Umay",
+      packages=find_packages(),
+      include_package_data=True,
+      package_data={'':['*', '*/*', '*/*/*', '*/*/*/*']},
+      entry_points = {'console_scripts': ['umay = umay.run:main']},
+      )
