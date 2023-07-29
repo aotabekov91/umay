@@ -1,5 +1,5 @@
 from .cli import UmayCLI
 
-def run():
+def main():
     cli=UmayCLI()
     cli.run()

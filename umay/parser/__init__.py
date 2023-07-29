@@ -1,1 +1,1 @@
-from .snips_parser improt SnipsParser
+from .snips_parser import SnipsParser
