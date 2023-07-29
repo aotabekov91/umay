@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-setup(name="Umay",
+setup(name="umay",
       version="0.0.1",
       description="Umay",
       packages=find_packages(),

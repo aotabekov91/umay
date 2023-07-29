@@ -1,8 +1,0 @@
----
-type: intent
-name: KeyboardMode_changeKeyboardAction
-slots:
-  - name: lan
-    entity: lan
-utterances:
-  - keyboard [lan](english)

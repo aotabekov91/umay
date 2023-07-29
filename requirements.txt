@@ -1,2 +1,4 @@
+setuptools-rust
+cython
 snips_nlu
 plugin==0.0.1

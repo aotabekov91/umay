@@ -1,0 +1,411 @@
+---
+type: intent
+name: open
+utterances:
+  - open
+
+---
+type: intent
+name: hide
+utterances:
+  - hide
+
+---
+type: intent
+name: close
+utterances:
+  - close
+
+---
+type: intent
+name: quit
+utterances:
+  - quit
+
+---
+type: intent
+name: show
+utterances:
+  - show
+
+---
+type: intent
+name: clear
+utterances:
+  - clear
+
+---
+type: intent
+name: done
+utterances:
+  - done
+
+---
+type: intent
+name: choose
+utterances:
+  - choose
+    
+---
+type: intent
+name: fullscreen
+utterances:
+  - full screen
+  - fullscreen 
+
+---
+type: intent
+name: cancel
+utterances:
+  - cancel
+
+---
+type: intent
+name: forward
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - forward
+  - forward [digit](eight) 
+  - forward [digit](five) times
+
+---
+type: intent
+name: backward
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - backward
+  - backward [digit](eight) 
+  - backward [digit](five) times
+
+---
+type: intent
+name: next
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - next
+  - next [digit](eight) 
+  - next [digit](five) times
+
+---
+type: intent
+name: previous
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - previous
+  - previous [digit](eight) 
+  - previous [digit](five) times
+
+---
+type: intent
+name: top
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - top
+  - top [digit](eight) 
+  - top [digit](five) times
+
+---
+type: intent
+name: bottom
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - bottom
+  - bottom [digit](eight) 
+  - bottom [digit](five) times
+
+---
+type: intent
+name: confirm
+utterances:
+  - okay
+
+---
+type: intent
+name: zoomIn 
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - zoom in
+  - zoom in [digit](eleven)
+  - zoom in [digit](eleven) times
+
+---
+type: intent
+name: zoomOut 
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - zoom out
+  - zoom out [digit](ten)
+  - zoom out [digit](ten) times
+
+---
+type: intent
+name: check 
+utterances:
+  - check
+  - cast
+
+---
+type: intent
+name: start
+utterances:
+  - start
+
+
+---
+type: intent
+name: save
+utterances:
+  - save
+
+---
+type: intent
+name: finish
+utterances:
+  - finish
+
+---
+type: intent
+name: refresh
+utterances:
+  - refresh
+
+---
+type: intent
+name: fit
+utterances:
+  - fit
+
+---
+type: intent
+name: lock
+utterances:
+  - fix
+  - lock
+    
+---
+type: intent
+name: unlock
+utterances:
+  - unfix
+  - unlock
+
+---
+type: intent
+name: create
+utterances:
+  - create
+
+---
+type: intent
+name: search
+utterances:
+  - search
+
+---
+type: intent
+name: toggle
+utterances:
+  - toggle
+
+---
+type: intent
+name: menu
+utterances:
+  - menu
+
+---
+type: intent
+name: horizontal
+utterances:
+  - horizontal
+
+---
+type: intent
+name: vertical
+utterances:
+  - vertical
+
+---
+type: intent
+name: rename
+utterances:
+  - rename
+
+---
+type: intent
+name: list
+utterances:
+  - list
+
+---
+type: intent
+name: focus
+slots:
+  - name: direction
+    entity: direction
+utterances:
+  - focus [direction](left)  
+  - focus [direction](right)  
+  - focus [direction](tiling)  
+
+---
+type: intent
+name: question 
+utterances:
+  - question
+  - ask
+
+---
+type: intent
+name: answer 
+utterances:
+  - answer
+
+---
+type: intent
+name: example 
+slots:
+  - name: number
+    entity: snips/number
+utterances:
+  - example
+  - example [number](one)
+  - example [number](two)
+
+---
+type: intent
+name: image 
+utterances:
+  - image
+
+---
+type: intent
+name: dismiss 
+utterances:
+  - dismiss
+
+---
+type: intent
+name: escape
+utterances:
+  - escape
+
+---
+type: intent
+name: tab
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - tab
+  - tab [digit](one)
+  - tab [digit](two) times
+
+---
+type: intent
+name: space
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - space
+  - space [digit](four)
+  - space [digit](five) times
+
+---
+type: intent
+name: interupt
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - interupt
+  - interupt [digit](two)
+  - interupt [digit](ten) times
+
+---
+type: intent
+name: enter
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - enter
+  - enter [digit](two)
+  - enter [digit](ten) times
+
+---
+type: intent
+name: backspace
+slots:
+  - name: digit
+    entity: snips/number 
+  - name: unit
+    entity: grammar_unit 
+utterances:
+  - remove
+  - remove [digit](five) times
+  - remove [digit](four)
+  - remove [unit](sentence)
+  - remove [unit](paragraph) 
+  - remove [unit](word) [digit](five) times
+
+---
+type: intent
+name: down
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - down
+  - down [digit](five) times
+  - down [digit](four)
+
+---
+type: intent
+name: up
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - up
+  - up [digit](five) times
+  - up [digit](six)
+
+---
+type: intent
+name: left
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - left 
+  - left [digit](five) times
+  - left [digit](eight) 
+
+---
+type: intent
+name: right
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - right 
+  - right [digit](eight) 
+  - right [digit](five) times

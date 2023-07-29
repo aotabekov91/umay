@@ -2,7 +2,7 @@ import zmq
 import json
 import argparse
 
-from plugin.plug import Plug
+from plugin import Plug
 
 from .main import Umay
 

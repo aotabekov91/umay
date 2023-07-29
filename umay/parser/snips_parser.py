@@ -5,15 +5,16 @@ class SnipsParser(SnipsNLUEngine):
 
     def __init__(self, lan='en'):
 
-        super(Parser, self).__init__()
+        super(SnipsParser, self).__init__()
 
         self.lan=lan
+        self.files=[]
         self.modes={}
 
-    def add(self, mode, file): 
+    def add(self, paths): 
 
-        if not mode in self.modes: self.modes[mode]=[]
-        self.modes[mode]+=[file]
+        self.files+=paths
+        self.fit()
 
     def fit(self):
 
@@ -24,10 +25,9 @@ class SnipsParser(SnipsNLUEngine):
         super().fit(self.dataset.json)
 
         for intent in self.dataset.intents:
-            mode_name=intent.intent_name.split('_')[0]
-            if not mode_name in self.modes:
-                self.modes[mode_name]=[]
-            self.modes[mode_name]+=[intent.intent_name]
+            mode=intent.intent_name.split('_')[0]
+            if not mode in self.modes: self.modes[mode]=[]
+            self.modes[mode]+=[intent.intent_name]
 
     def parse(self, text, mode=None, prob=.5):
 
@@ -37,7 +37,7 @@ class SnipsParser(SnipsNLUEngine):
                 slots[s['slotName']]=s['value']['value']
             return slots
 
-        mode=self.modes.get(mode, None)
+        intents=self.modes.get(mode, None)
 
         i_data=super().parse(text, intents=intents)
         c_name=i_data['intent'].get('intentName', None)
