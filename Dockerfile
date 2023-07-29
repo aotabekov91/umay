@@ -12,4 +12,4 @@ run git clone https://github.com/aotabekov91/umay
 
 run cd plug && pip3 install -r requirements.txt .
 run cd umay && pip3 install -r requirements.txt . 
-# run python3 -m snips_nlu download en
+run python3 -m snips_nlu download en
