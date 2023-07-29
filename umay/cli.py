@@ -27,7 +27,7 @@ class UmayCLI(Plug):
 
     def setSocket(self): 
 
-        self.socket = zmq.Context().socket(zmq.REQ)
+        self.socket = zmq.Context().socket(zmq.PUSH)
         self.socket.connect(f'tcp://localhost:{self.port}')
 
     def runAction(self, action, request={}):

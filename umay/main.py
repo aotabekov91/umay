@@ -1,6 +1,4 @@
-import zmq
 from plugin import Plug
-
 from .parser import SnipsParser
 
 class Umay(Plug):
@@ -12,14 +10,10 @@ class Umay(Plug):
         self.modes={}
         self.parser=SnipsParser()
 
-    def setConnection(self): super().setConnection(zmq.REP)
-
-    def run(self): super().run(answer=True)
-
-    def add(self, mode, port, paths):
+    def register(self, mode, port, files):
 
         self.modes[mode]=port
-        self.parser.add(paths)
+        self.parser.add(files)
 
     def parse(self, text, mode=None, prob=0.5):
 

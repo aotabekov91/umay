@@ -1,67 +1,61 @@
 ---
 type: intent
-name: open
+name: Generic_open
 utterances:
   - open
 
 ---
 type: intent
-name: hide
+name: Generic_hide
 utterances:
   - hide
 
 ---
 type: intent
-name: close
+name: Generic_close
 utterances:
   - close
 
 ---
 type: intent
-name: quit
+name: Generic_quit
 utterances:
   - quit
 
 ---
 type: intent
-name: show
+name: Generic_show
 utterances:
   - show
 
 ---
 type: intent
-name: clear
-utterances:
-  - clear
-
----
-type: intent
-name: done
+name: Generic_done
 utterances:
   - done
 
 ---
 type: intent
-name: choose
+name: Generic_choose
 utterances:
   - choose
     
 ---
 type: intent
-name: fullscreen
+name: Generic_fullscreen
 utterances:
   - full screen
   - fullscreen 
 
 ---
 type: intent
-name: cancel
+name: Generic_cancel
 utterances:
   - cancel
 
 ---
 type: intent
-name: forward
+name: Generic_forward
 slots:
   - name: digit
     entity: snips/number 
@@ -72,7 +66,7 @@ utterances:
 
 ---
 type: intent
-name: backward
+name: Generic_backward
 slots:
   - name: digit
     entity: snips/number 
@@ -83,7 +77,7 @@ utterances:
 
 ---
 type: intent
-name: next
+name: Generic_next
 slots:
   - name: digit
     entity: snips/number 
@@ -94,7 +88,7 @@ utterances:
 
 ---
 type: intent
-name: previous
+name: Generic_previous
 slots:
   - name: digit
     entity: snips/number 
@@ -105,7 +99,7 @@ utterances:
 
 ---
 type: intent
-name: top
+name: Generic_top
 slots:
   - name: digit
     entity: snips/number 
@@ -116,7 +110,7 @@ utterances:
 
 ---
 type: intent
-name: bottom
+name: Generic_bottom
 slots:
   - name: digit
     entity: snips/number 
@@ -127,13 +121,13 @@ utterances:
 
 ---
 type: intent
-name: confirm
+name: Generic_confirm
 utterances:
   - okay
 
 ---
 type: intent
-name: zoomIn 
+name: Generic_zoomIn 
 slots:
   - name: digit
     entity: snips/number 
@@ -144,7 +138,7 @@ utterances:
 
 ---
 type: intent
-name: zoomOut 
+name: Generic_zoomOut 
 slots:
   - name: digit
     entity: snips/number 
@@ -155,107 +149,85 @@ utterances:
 
 ---
 type: intent
-name: check 
+name: Generic_check 
 utterances:
   - check
-  - cast
 
 ---
 type: intent
-name: start
+name: Generic_start
 utterances:
   - start
 
-
 ---
 type: intent
-name: save
+name: Generic_save
 utterances:
   - save
 
 ---
 type: intent
-name: finish
+name: Generic_finish
 utterances:
   - finish
 
 ---
 type: intent
-name: refresh
+name: Generic_refresh
 utterances:
   - refresh
 
 ---
 type: intent
-name: fit
+name: Generic_lock
 utterances:
-  - fit
-
----
-type: intent
-name: lock
-utterances:
-  - fix
   - lock
     
 ---
 type: intent
-name: unlock
+name: Generic_unlock
 utterances:
-  - unfix
   - unlock
 
 ---
 type: intent
-name: create
+name: Generic_create
 utterances:
   - create
 
 ---
 type: intent
-name: search
+name: Generic_search
 utterances:
   - search
 
 ---
 type: intent
-name: toggle
+name: Generic_toggle
 utterances:
   - toggle
 
 ---
 type: intent
-name: menu
+name: Generic_menu
 utterances:
   - menu
 
 ---
 type: intent
-name: horizontal
-utterances:
-  - horizontal
-
----
-type: intent
-name: vertical
-utterances:
-  - vertical
-
----
-type: intent
-name: rename
+name: Generic_rename
 utterances:
   - rename
 
 ---
 type: intent
-name: list
+name: Generic_list
 utterances:
   - list
 
 ---
 type: intent
-name: focus
+name: Generic_focus
 slots:
   - name: direction
     entity: direction
@@ -266,20 +238,20 @@ utterances:
 
 ---
 type: intent
-name: question 
+name: Generic_question 
 utterances:
   - question
   - ask
 
 ---
 type: intent
-name: answer 
+name: Generic_answer 
 utterances:
   - answer
 
 ---
 type: intent
-name: example 
+name: Generic_example 
 slots:
   - name: number
     entity: snips/number
@@ -290,25 +262,25 @@ utterances:
 
 ---
 type: intent
-name: image 
+name: Generic_image 
 utterances:
   - image
 
 ---
 type: intent
-name: dismiss 
+name: Generic_dismiss 
 utterances:
   - dismiss
 
 ---
 type: intent
-name: escape
+name: Generic_escape
 utterances:
   - escape
 
 ---
 type: intent
-name: tab
+name: Generic_tab
 slots:
   - name: digit
     entity: snips/number 
@@ -319,7 +291,7 @@ utterances:
 
 ---
 type: intent
-name: space
+name: Generic_space
 slots:
   - name: digit
     entity: snips/number 
@@ -330,7 +302,7 @@ utterances:
 
 ---
 type: intent
-name: interupt
+name: Generic_interupt
 slots:
   - name: digit
     entity: snips/number 
@@ -341,7 +313,7 @@ utterances:
 
 ---
 type: intent
-name: enter
+name: Generic_enter
 slots:
   - name: digit
     entity: snips/number 
@@ -352,7 +324,7 @@ utterances:
 
 ---
 type: intent
-name: backspace
+name: Generic_backspace
 slots:
   - name: digit
     entity: snips/number 
@@ -368,7 +340,7 @@ utterances:
 
 ---
 type: intent
-name: down
+name: Generic_down
 slots:
   - name: digit
     entity: snips/number 
@@ -379,7 +351,7 @@ utterances:
 
 ---
 type: intent
-name: up
+name: Generic_up
 slots:
   - name: digit
     entity: snips/number 
@@ -390,7 +362,7 @@ utterances:
 
 ---
 type: intent
-name: left
+name: Generic_left
 slots:
   - name: digit
     entity: snips/number 
@@ -401,7 +373,7 @@ utterances:
 
 ---
 type: intent
-name: right
+name: Generic_right
 slots:
   - name: digit
     entity: snips/number 
