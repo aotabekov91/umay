@@ -1,4 +1,4 @@
-from plugin import Plug
+from plug import Plug
 from .parser import SnipsParser
 
 class Umay(Plug):

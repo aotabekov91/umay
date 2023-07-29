@@ -1,5 +1,5 @@
 setuptools-rust
 cython
 snips_nlu
+plug==0.0.1
 pyzmq==25.0.2
-plugin==0.0.1
