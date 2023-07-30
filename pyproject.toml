@@ -31,4 +31,8 @@ umayp = "umay.parser:main"
 
 [tool.setuptools.package-data]
 
-umay = ["*.ini"]
+"*" = ["*"] 
+
+[tool.setuptools.packages.find]
+
+where = ["src"]

@@ -47,7 +47,12 @@ class Umay(Plug):
 
     def parse(self, text, mode=None, prob=0.5, count=1):
 
-        data={'text':text, 'mode':mode, 'prob':prob, 'count':count}
+        data={'text':text,
+              'mode':mode,
+              'prob':prob,
+              'count':count,
+              'action':'parse',
+              }
         self.queue.put(data)
 
 def main():
