@@ -9,6 +9,8 @@ class Manager(Plug):
         self.mode=None
         self.umay=umay
 
+        super().__init__()
+
     def setModeConnection(self, port, kind):
 
         socket=zmq.Context().socket()
