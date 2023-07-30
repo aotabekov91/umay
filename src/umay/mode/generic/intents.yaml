@@ -209,6 +209,18 @@ utterances:
 
 ---
 type: intent
+name: Generic_activate
+utterances:
+  - activate
+
+---
+type: intent
+name: Generic_deactivate
+utterances:
+  - deactivate
+
+---
+type: intent
 name: Generic_menu
 utterances:
   - menu

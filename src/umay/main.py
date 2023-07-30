@@ -11,9 +11,7 @@ class Umay(Plug):
 
         super(Umay, self).__init__()
 
-        self.modes={}
         self.queue=Queue()
-
         self.generic=Generic()
         self.manager=Manager(self)
 
@@ -47,7 +45,7 @@ class Umay(Plug):
 
     def register(self, mode, port, paths):
 
-        self.modes[mode]=port
+        self.manager.register(mode, port)
         data={'action':'add', 'mode':mode, 'paths':paths}
         self.psocket.send_json(data)
         respond=self.psocket.recv_json()
