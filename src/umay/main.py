@@ -44,7 +44,7 @@ class Umay(Plug):
         self.modes[mode]=port
         data={'action':'add', 'mode':mode, 'paths':paths}
         self.psocket.send_json(data)
-        respond=self.psocket.resv_json()
+        respond=self.psocket.recv_json()
         print(respond)
 
     def parse(self, text, mode=None, prob=0.5, count=1):
