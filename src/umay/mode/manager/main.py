@@ -13,13 +13,14 @@ class Manager(Plug):
 
     def setModeConnection(self, port, kind):
 
-        socket=zmq.Context().socket()
+        socket=zmq.Context().socket(kind)
         socket.connect(f'tcp://localhost:{port}')
         return socket
 
     def register(self, mode, port, kind=zmq.PUSH): 
 
-        self.modes[mode]=self.setSocket(port, kind)
+        if port:
+            self.modes[mode]=self.setModeConnection(port, kind)
 
     def setMode(self, mode): self.mode=mode
 

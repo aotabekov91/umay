@@ -33,6 +33,7 @@ class Parser(Plug):
         mode_entities=[]
 
         for doc in paths:
+            if not doc: continue
             for block in doc:
                 block_type = block.get("type")
                 if block_type == "entity":
