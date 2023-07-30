@@ -1,12 +1,11 @@
-from ubuntu:20.04
+from umay:test
 
 expose 20001
 workdir /code
 
-run apt update && apt install -y python3.9 && apt install -y python3-pip && apt install -y git
 run git clone https://github.com/aotabekov91/plug 
-# run git clone https://github.com/aotabekov91/umay 
+run git clone https://github.com/aotabekov91/umay 
 
-run pip3 install "plug" 
-# run pip3 install "umay[snips_nlu]" 
-# run python3 -m snips_nlu download en
+run pip install "/code/plug"  
+run pip3 install "/code/umay[snips_nlu]" 
+run python3 -m snips_nlu download en

@@ -25,11 +25,7 @@ snips_nlu = [
 
 [project.scripts]
 
-umay = "umay.run:main"
-
-[tool.setuptools.packages.find]
-
-where = ["umay"]
+umay = "run:main"
 
 [tool.setuptools.package-data]
 
