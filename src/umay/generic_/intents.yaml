@@ -1,0 +1,288 @@
+---
+type: intent
+name: Generic_open
+utterances:
+  - open
+
+---
+type: intent
+name: Generic_close
+utterances:
+  - close
+
+---
+type: intent
+name: Generic_hide
+utterances:
+  - hide
+
+---
+type: intent
+name: Generic_show
+utterances:
+  - show
+
+---
+type: intent
+name: Generic_quit
+utterances:
+  - quit
+
+---
+type: intent
+name: Generic_done
+utterances:
+  - done
+
+---
+type: intent
+name: Generic_choose
+utterances:
+  - choose
+    
+---
+type: intent
+name: Generic_fullscreen
+utterances:
+  - full screen
+  - fullscreen 
+
+---
+type: intent
+name: Generic_cancel
+utterances:
+  - cancel
+
+---
+type: intent
+name: Generic_forward
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - forward
+  - forward [digit](eight) 
+  - forward [digit](five) times
+
+---
+type: intent
+name: Generic_backward
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - backward
+  - backward [digit](eight) 
+  - backward [digit](five) times
+
+---
+type: intent
+name: Generic_next
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - next
+  - next [digit](eight) 
+  - next [digit](five) times
+
+---
+type: intent
+name: Generic_previous
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - previous
+  - previous [digit](eight) 
+  - previous [digit](five) times
+
+---
+type: intent
+name: Generic_top
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - top
+  - top [digit](eight) 
+  - top [digit](five) times
+
+---
+type: intent
+name: Generic_bottom
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - bottom
+  - bottom [digit](eight) 
+  - bottom [digit](five) times
+
+---
+type: intent
+name: Generic_confirm
+utterances:
+  - okay
+
+---
+type: intent
+name: Generic_zoomIn 
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - zoom in
+  - zoom in [digit](eleven)
+  - zoom in [digit](eleven) times
+
+---
+type: intent
+name: Generic_zoomOut 
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - zoom out
+  - zoom out [digit](ten)
+  - zoom out [digit](ten) times
+
+---
+type: intent
+name: Generic_check 
+utterances:
+  - check
+
+---
+type: intent
+name: Generic_start
+utterances:
+  - start
+
+---
+type: intent
+name: Generic_start
+utterances:
+  - stop
+
+---
+type: intent
+name: Generic_start
+utterances:
+  - pause
+
+---
+type: intent
+name: Generic_start
+utterances:
+  - play
+
+---
+type: intent
+name: Generic_save
+utterances:
+  - save
+
+---
+type: intent
+name: Generic_finish
+utterances:
+  - finish
+
+---
+type: intent
+name: Generic_refresh
+utterances:
+  - refresh
+
+---
+type: intent
+name: Generic_search
+utterances:
+  - search
+
+---
+type: intent
+name: Generic_toggle
+utterances:
+  - toggle
+
+---
+type: intent
+name: Generic_menu
+utterances:
+  - menu
+
+---
+type: intent
+name: Generic_help
+utterances:
+  - help
+
+---
+type: intent
+name: Generic_command
+utterances:
+  - command
+
+---
+type: intent
+name: Generic_rename
+utterances:
+  - rename
+
+---
+type: intent
+name: Generic_main
+utterances:
+  - main
+
+---
+type: intent
+name: Generic_remove
+utterances:
+  - remove
+
+---
+type: intent
+name: Generic_up
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - up
+  - up [digit](five) times
+  - up [digit](six)
+
+---
+type: intent
+name: Generic_down
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - down
+  - down [digit](five) times
+  - down [digit](four)
+
+---
+type: intent
+name: Generic_left
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - left 
+  - left [digit](five) times
+  - left [digit](eight) 
+
+---
+type: intent
+name: Generic_right
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - right 
+  - right [digit](eight) 
+  - right [digit](five) times
