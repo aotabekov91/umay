@@ -1,0 +1,36 @@
+[build-system]
+
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+
+name = "umay"
+version = "0.0.1"
+description = "Umay"
+readme = "README.md"
+dependencies = [
+	'plug==0.0.1', 
+	'pyzmq==25.0.2', 
+  ]
+
+[project.optional-dependencies]
+
+snips_nlu = [
+  'setuptools-rust',
+  'cython',
+  'snips_nlu', 
+  'numpy==1.20.0'
+  ]
+
+[project.scripts]
+
+umay = "umay.run:main"
+
+[tool.setuptools.packages.find]
+
+where = ["umay"]
+
+[tool.setuptools.package-data]
+
+umay = ["*.ini"]

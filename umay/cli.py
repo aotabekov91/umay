@@ -4,6 +4,8 @@ import argparse
 
 from plug import Plug
 
+from .main import Umay
+
 class UmayCLI(Plug):
 
     def setConnection(self): pass
@@ -34,10 +36,11 @@ class UmayCLI(Plug):
 
         request['action']=action
         self.socket.send_json(request)
-        if action!='exit':
-            response=self.socket.recv_json()
-            json_object = json.dumps(response, indent = 4) 
-            print(json_object)
+
+    def runApp(self):
+
+        app=Umay()
+        app.run()
 
     def run(self):
 
@@ -47,6 +50,8 @@ class UmayCLI(Plug):
             self.runAction('parse', vars(args))
         elif args.command=='exit':
             self.runAction('exit')
+        elif args.command is None:
+            self.runApp()
 
 if __name__=='__main__':
 

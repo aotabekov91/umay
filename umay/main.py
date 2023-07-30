@@ -25,7 +25,7 @@ class Umay(Plug):
 
         def listen_queue():
 
-            while self.running=True:
+            while self.running:
                 data=self.queue.get()
                 self.psocket.send_json(data)
                 respond=self.psocket.recv_json()
