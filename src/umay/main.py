@@ -3,6 +3,8 @@ from plug import Plug
 from queue import Queue
 from threading import Thread
 
+from .generic import Generic
+
 class Umay(Plug):
 
     def __init__(self):
@@ -47,3 +49,10 @@ class Umay(Plug):
 
         data={'text':text, 'mode':mode, 'prob':prob, 'count':count}
         self.queue.put(data)
+
+def main():
+
+    generic=Generic()
+
+    app=Umay()
+    app.run()

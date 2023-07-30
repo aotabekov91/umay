@@ -25,7 +25,9 @@ snips_nlu = [
 
 [project.scripts]
 
-umay = "umay.cli:main"
+umayc = "umay.cli:main"
+umayd = "umay.main:main"
+umayp = "umay.parser:main"
 
 [tool.setuptools.package-data]
 

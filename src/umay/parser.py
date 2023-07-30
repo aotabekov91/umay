@@ -60,7 +60,7 @@ class Parser(Plug):
         intents=self.modes.get(mode, None)
         return self.engine.parse(text, intents=intents)
 
-if __name__=='__main__':
+def main():
 
     parser=Parser()
     parser.run()
