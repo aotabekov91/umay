@@ -3,8 +3,6 @@ from plug import Plug
 from queue import Queue
 from threading import Thread
 
-from .generic import Generic
-
 class Umay(Plug):
 
     def __init__(self):
@@ -17,9 +15,10 @@ class Umay(Plug):
     def setConnection(self):
 
         super().setConnection()
+
         if self.parser_port:
             self.psocket = zmq.Context().socket(zmq.REQ)
-            self.psocket.bind(f'tcp://*:{self.parser_port}')
+            self.psocket.connect(f'tcp://localhost:{self.parser_port}')
 
     def run(self):
 
@@ -28,6 +27,7 @@ class Umay(Plug):
         def listen_queue():
 
             while self.running:
+
                 data=self.queue.get()
                 self.psocket.send_json(data)
                 respond=self.psocket.recv_json()
@@ -51,8 +51,6 @@ class Umay(Plug):
         self.queue.put(data)
 
 def main():
-
-    generic=Generic()
 
     app=Umay()
     app.run()

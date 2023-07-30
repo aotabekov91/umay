@@ -1,4 +1,4 @@
-from umay:test
+from t:test
 
 expose 20001
 workdir /code
