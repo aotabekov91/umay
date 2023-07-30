@@ -53,7 +53,8 @@ class UmayCLI(Plug):
         elif args.command is None:
             self.runApp()
 
-if __name__=='__main__':
+
+def main():
 
     cli = UmayCLI()
     cli.run()
