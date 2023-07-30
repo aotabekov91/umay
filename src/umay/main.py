@@ -3,6 +3,8 @@ from plug import Plug
 from queue import Queue
 from threading import Thread
 
+from .mode import Generic, Manager
+
 class Umay(Plug):
 
     def __init__(self):
@@ -12,13 +14,17 @@ class Umay(Plug):
         self.modes={}
         self.queue=Queue()
 
+        self.generic=Generic()
+        self.manager=Manager(self)
+
     def setConnection(self):
 
         super().setConnection()
 
         if self.parser_port:
             self.psocket = zmq.Context().socket(zmq.REQ)
-            self.psocket.connect(f'tcp://localhost:{self.parser_port}')
+            self.psocket.connect(
+                    f'tcp://localhost:{self.parser_port}')
 
     def run(self):
 
@@ -31,7 +37,7 @@ class Umay(Plug):
                 data=self.queue.get()
                 self.psocket.send_json(data)
                 respond=self.psocket.recv_json()
-                print(respond)
+                self.manager.act(respond)
 
         t=Thread(target=listen_queue)
         t.daemon=True

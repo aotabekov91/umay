@@ -1,0 +1,19 @@
+---
+type: entity
+name: keyword
+automatically_extensible: yes
+
+---
+type: intent
+name: UmayManager_setMode
+slots:
+  - name: mode
+    entity: keyword 
+utterances:
+  - set [mode](keyboard)
+  - set [mode](player)
+  - set [mode](window)
+  - set [mode](lura)
+  - set [mode](feh)
+  - set [mode](vim)
+  - set [mode](tmux)
