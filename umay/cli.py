@@ -4,8 +4,6 @@ import argparse
 
 from plug import Plug
 
-from .main import Umay
-
 class UmayCLI(Plug):
 
     def setConnection(self): pass
@@ -41,16 +39,6 @@ class UmayCLI(Plug):
             json_object = json.dumps(response, indent = 4) 
             print(json_object)
 
-    def runApp(self):
-
-        app=Umay()
-        self.setSocket()
-
-        if app.socket:
-            app.run()
-        else:
-            print('An instance of Willmann is already running')
-
     def run(self):
 
         args = self.parser.parse_args()
@@ -59,8 +47,6 @@ class UmayCLI(Plug):
             self.runAction('parse', vars(args))
         elif args.command=='exit':
             self.runAction('exit')
-        elif args.command is None:
-            self.runApp()
 
 if __name__=='__main__':
 
