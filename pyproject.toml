@@ -17,11 +17,10 @@ dependencies = [
 [project.optional-dependencies]
 
 snips_nlu = [
-	'plug==0.0.1', 
-  # 'setuptools-rust',
-  # 'cython',
-  # 'snips_nlu', 
-  # 'numpy==1.20.0'
+  'setuptools-rust',
+  'cython',
+  'snips_nlu', 
+  'numpy==1.20.0'
   ]
 
 [project.scripts]
