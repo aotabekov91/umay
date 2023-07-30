@@ -32,7 +32,7 @@ class Parser(Plug):
         mode_intents=[]
         mode_entities=[]
 
-        for doc in self.docs:
+        for doc in paths:
             for block in doc:
                 block_type = block.get("type")
                 if block_type == "entity":
