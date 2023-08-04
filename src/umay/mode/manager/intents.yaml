@@ -7,13 +7,13 @@ automatically_extensible: yes
 type: intent
 name: UmayManager_setMode
 slots:
-  - name: mode
+  - name: keyworkd
     entity: keyword 
 utterances:
-  - set [mode](keyboard)
-  - set [mode](player)
-  - set [mode](window)
-  - set [mode](lura)
-  - set [mode](feh)
-  - set [mode](vim)
-  - set [mode](tmux)
+  - set [keyword](keyboard)
+  - set [keyword](player)
+  - set [keyword](window)
+  - set [keyword](lura)
+  - set [keyword](feh)
+  - set [keyword](vim)
+  - set [keyword](tmux)

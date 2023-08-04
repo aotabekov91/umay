@@ -1,1 +1,1 @@
-from .main import Manager
+from .main import UmayManager

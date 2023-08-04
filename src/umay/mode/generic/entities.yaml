@@ -15,3 +15,13 @@ values:
   - ['10', ten, october]
   - ['11', eleven, november]
   - ['12', twelve, december]
+
+---
+type: entity
+name: lan
+automatically_extensible: yes
+values:
+  - ['de', german]
+  - ['us', english]
+  - ['ru', russian]
+  - ['tr', turkish] 

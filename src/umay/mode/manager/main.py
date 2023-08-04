@@ -1,10 +1,11 @@
 import zmq 
 from plug import Plug
 
-class Manager(Plug): 
+class UmayManager(Plug): 
 
     def __init__(self, umay): 
 
+        self.sockets={}
         self.modes={}
         self.mode=None
         self.umay=umay
@@ -17,22 +18,33 @@ class Manager(Plug):
         socket.connect(f'tcp://localhost:{port}')
         return socket
 
-    def register(self, mode, port, kind=zmq.PUSH): 
+    def register(self, mode, keyword, port, kind=zmq.PUSH): 
 
         if port:
-            self.modes[mode]=self.setModeConnection(port, kind)
+            self.sockets[mode]=self.setModeConnection(port, kind)
+            self.modes[keyword]=mode
 
-    def setMode(self, mode): self.mode=mode
+    def setMode(self, keyword): 
+
+        mode=self.modes.get(keyword, None)
+        if mode: self.mode=mode
+        print('Umay mode: ', self.mode) 
 
     def act(self, respond):
 
         todo=self.parse(respond)
+        print('Umay to do: ', todo)
 
         if todo:
-            mode, requst = todo
-            if mode!='Generic': self.mode=mode
-            socket=self.modes.get(self.mode, None)
-            if socket: socket.send_json(requst)
+
+            mode, request = todo
+
+            if mode==self.name:
+                self.handle(request)
+            else:
+                if mode!='Generic': self.mode=mode
+                socket=self.sockets.get(self.mode, None)
+                if socket: socket.send_json(request)
 
     def parse(self, respond):
 
