@@ -1,4 +1,3 @@
-import zmq 
 from plug import Plug
 
 class UmayManager(Plug): 
@@ -12,16 +11,12 @@ class UmayManager(Plug):
 
         super().__init__()
 
-    def setModeConnection(self, port, kind):
-
-        socket=zmq.Context().socket(kind)
-        socket.connect(f'tcp://localhost:{port}')
-        return socket
-
-    def register(self, mode, keyword, port, kind=zmq.PUSH): 
+    def register(self, mode, keyword, port, kind): 
 
         if port:
-            self.sockets[mode]=self.setModeConnection(port, kind)
+            socket=self.getConnection(kind)
+            socket.connect(f'tcp://localhost:{port}')
+            self.sockets[mode]=(socket, kind)
             self.modes[keyword]=mode
 
     def setMode(self, keyword): 
@@ -38,38 +33,41 @@ class UmayManager(Plug):
         if todo:
 
             mode, request = todo
-
             if mode==self.name:
                 self.handle(request)
             else:
                 if mode!='Generic': self.mode=mode
-                socket=self.sockets.get(self.mode, None)
-                if socket: socket.send_json(request)
+
+                socket, kind=self.sockets.get(
+                        self.mode, (None, None))
+
+                if socket: 
+                    socket.send_json(request)
+                if kind in ['REQ']:
+                    respond=socket.recv_json()
+                    print(respond)
+                    return respond
 
     def parse(self, respond):
 
-        result=respond.get('result', None)
+        result=respond.get('result', {})
+        intent=result.get('intent', {})
+        slots=result.get('slots', {})
+        intent_name=intent.get('intentName', None)
 
-        if result: 
+        if intent_name:
 
-            intent=result.get('intent')
-            slots=result.get('slots')
+            nm=intent_name.split('_', 1)
 
-            intent_name=intent.get('intentName', None)
+            if len(nm)==2:
 
-            if intent_name:
+                req={}
+                mode, action = nm[0], nm[1]
+                req={'action': action}
 
-                nm=intent_name.split('_', 1)
-                if len(nm)==2:
+                for s in slots:
 
-                    req={}
-                    mode, action = nm[0], nm[1]
+                    value=s['value']['value']
+                    req[s['slotName']]=value
 
-                    req={'action': action}
-
-                    for s in slots:
-
-                        value=s['value']['value']
-                        req[s['slotName']]=value
-
-                    return mode, req
+                return mode, req

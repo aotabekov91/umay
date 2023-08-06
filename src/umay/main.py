@@ -11,17 +11,16 @@ class Umay(Plug):
         super().__init__(respond_port=True)
 
         self.queue=Queue()
-        self.generic=Generic()
         self.manager=UmayManager(self)
+        self.generic=Generic()
 
-    def reportByUmay(self): pass
+    def registerByUmay(self): pass
 
     def setConnection(self):
 
         super().setConnection(kind='REP')
 
         if self.parser_port:
-
             self.parser_socket = self.getConnection(kind='REQ')
             self.parser_socket.connect(
                     f'tcp://localhost:{self.parser_port}')
@@ -33,7 +32,6 @@ class Umay(Plug):
         def listen_queue():
 
             while self.running:
-
                 data=self.queue.get()
                 self.parser_socket.send_json(data)
                 respond=self.parser_socket.recv_json()
@@ -43,15 +41,19 @@ class Umay(Plug):
         t=Thread(target=listen_queue)
         t.daemon=True
         t.start()
-
         super().run()
 
-    def register(self, mode, keyword, port, paths):
+    def register(self, 
+                 mode, 
+                 keyword, 
+                 port, 
+                 paths,
+                 kind,
+                 ):
 
-        self.manager.register(mode, keyword, port)
+        self.manager.register(mode, keyword, port, kind)
 
         if any(paths):
-
             data={'action':'add', 'mode':mode, 'paths':paths}
             self.parser_socket.send_json(data)
             respond=self.parser_socket.recv_json()
@@ -67,7 +69,6 @@ class Umay(Plug):
               'count':count,
               'action':'parse',
               }
-
         self.queue.put(data)
 
 def main():

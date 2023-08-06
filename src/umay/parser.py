@@ -17,7 +17,7 @@ class Parser(Plug):
 
         self.engine=SnipsNLUEngine()
 
-    def reportByUmay(self): pass
+    def registerByUmay(self): pass
 
     def setConnection(self): 
 
@@ -33,27 +33,30 @@ class Parser(Plug):
         mode_entities=[]
 
         for doc in paths:
-            if not doc: continue
-            for block in doc:
-                block_type = block.get("type")
-                if block_type == "entity":
-                    mode_entities.append(Entity.from_yaml(block))
-                elif block_type == "intent":
-                    mode_intents.append(Intent.from_yaml(block))
+            if doc:
+                for block in doc:
+                    block_type = block.get("type")
+
+                    if block_type == "entity":
+                        mode_entities.append(
+                                Entity.from_yaml(block))
+                    elif block_type == "intent":
+                        mode_intents.append(
+                                Intent.from_yaml(block))
 
         for intent in mode_intents:
             self.modes[mode]+=[intent.intent_name]
 
         self.intents+=mode_intents
         self.entities+=mode_entities
-
         self.fit()
 
     def fit(self): 
 
-        self.dataset = Dataset('en', 
-                               self.intents, 
-                               self.entities)
+        self.dataset = Dataset(
+                'en', 
+                self.intents, 
+                self.entities)
         self.engine.fit(self.dataset.json)
 
     def parse(self, text, mode=None, prob=.5, count=1):

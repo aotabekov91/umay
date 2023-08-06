@@ -8,7 +8,7 @@ class UmayCLI(Plug):
 
         if not initial:
 
-            self.socket = self.getConnection('PUSH')
+            self.socket = self.getConnection('REQ')
             self.socket.connect(f'tcp://localhost:{self.port}')
 
     def setSettings(self):
@@ -31,6 +31,8 @@ class UmayCLI(Plug):
 
         request['action']=action
         self.socket.send_json(request)
+        respond=self.socket.recv_json()
+        return respond
 
     def run(self):
 
