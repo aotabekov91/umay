@@ -1,12 +1,15 @@
-import zmq
-import json
 import argparse
 
 from plug import Plug
 
 class UmayCLI(Plug):
 
-    def setConnection(self): pass
+    def setConnection(self, initial=True): 
+
+        if not initial:
+
+            self.socket = self.getConnection('PUSH')
+            self.socket.connect(f'tcp://localhost:{self.port}')
 
     def setSettings(self):
 
@@ -15,22 +18,16 @@ class UmayCLI(Plug):
         self.parser=argparse.ArgumentParser()
 
         self.subparser=self.parser.add_subparsers(dest='command')
-
         self.subparser.add_parser('exit')
-        self.parser_action=self.subparser.add_parser('parse')
 
+        self.parser_action=self.subparser.add_parser('parse')
         self.parser_action.add_argument('-m', '--mode')
         self.parser_action.add_argument('-t', '--text')
         self.parser_action.add_argument('-p', '--prob')
 
-    def setSocket(self): 
-
-        self.socket = zmq.Context().socket(zmq.PUSH)
-        self.socket.connect(f'tcp://localhost:{self.port}')
-
     def runAction(self, action, request={}):
 
-        self.setSocket()
+        self.setConnection(initial=False)
 
         request['action']=action
         self.socket.send_json(request)

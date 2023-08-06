@@ -1,4 +1,6 @@
-from t:test
+from ubuntu:20.04
+
+run apt update && apt install -y python3 && apt install -y python3-pip && apt install -y git
 
 expose 20001
 workdir /code

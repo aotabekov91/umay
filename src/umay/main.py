@@ -1,4 +1,3 @@
-import zmq
 from plug import Plug
 from queue import Queue
 from threading import Thread
@@ -9,7 +8,7 @@ class Umay(Plug):
 
     def __init__(self):
 
-        super(Umay, self).__init__()
+        super().__init__(respond_port=True)
 
         self.queue=Queue()
         self.generic=Generic()
@@ -17,11 +16,12 @@ class Umay(Plug):
 
     def setConnection(self):
 
-        super().setConnection()
+        super().setConnection(kind='REP')
 
         if self.parser_port:
-            self.psocket = zmq.Context().socket(zmq.REQ)
-            self.psocket.connect(
+
+            self.parser_socket = self.getConnection(kind='REQ')
+            self.parser_socket.connect(
                     f'tcp://localhost:{self.parser_port}')
 
     def run(self):
@@ -33,8 +33,8 @@ class Umay(Plug):
             while self.running:
 
                 data=self.queue.get()
-                self.psocket.send_json(data)
-                respond=self.psocket.recv_json()
+                self.parser_socket.send_json(data)
+                respond=self.parser_socket.recv_json()
                 print('Received from parser: ', respond) 
                 self.manager.act(respond)
 
@@ -51,8 +51,8 @@ class Umay(Plug):
         if any(paths):
 
             data={'action':'add', 'mode':mode, 'paths':paths}
-            self.psocket.send_json(data)
-            respond=self.psocket.recv_json()
+            self.parser_socket.send_json(data)
+            respond=self.parser_socket.recv_json()
             print(respond)
 
     def getModes(self): raise

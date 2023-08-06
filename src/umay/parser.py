@@ -1,9 +1,7 @@
-import zmq
 from plug import Plug
 
 from snips_nlu import SnipsNLUEngine
 from snips_nlu.dataset import Dataset
-
 from snips_nlu.dataset.entity import Entity
 from snips_nlu.dataset.intent import Intent
 
@@ -11,7 +9,7 @@ class Parser(Plug):
 
     def __init__(self):
 
-        super(Parser, self).__init__()
+        super().__init__(respond_port=True)
 
         self.modes={}
         self.intents=[]
@@ -22,7 +20,7 @@ class Parser(Plug):
     def setConnection(self): 
 
         if self.parser_port:
-            self.socket = zmq.Context().socket(zmq.REP)
+            self.socket = self.getConnection(kind='REP')
             self.socket.bind(f'tcp://*:{self.parser_port}')
 
     def add(self, mode, paths): 
@@ -60,8 +58,6 @@ class Parser(Plug):
 
         intents=self.modes.get(mode, None)
         return self.engine.parse(text, intents=intents)
-
-    def run(self): super().run(answer=True)
 
 def main():
 
