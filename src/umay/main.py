@@ -14,6 +14,8 @@ class Umay(Plug):
         self.generic=Generic()
         self.manager=UmayManager(self)
 
+    def reportByUmay(self): pass
+
     def setConnection(self):
 
         super().setConnection(kind='REP')
