@@ -1,31 +1,47 @@
-from plug import Plug
+from plug.plugs.handler import Handler
 
-from snips_nlu import SnipsNLUEngine
-from snips_nlu.dataset import Dataset
-from snips_nlu.dataset.entity import Entity
-from snips_nlu.dataset.intent import Intent
+# from snips_nlu import SnipsNLUEngine
+# from snips_nlu.dataset import Dataset
+# from snips_nlu.dataset.entity import Entity
+# from snips_nlu.dataset.intent import Intent
 
-class Parser(Plug):
+class Parser(Handler):
 
-    def __init__(self):
+    def __init__(
+            self, 
+            *args, 
+            lan='en',
+            parser_port=None,
+            **kwargs):
 
-        super().__init__(respond_port=True)
-
+        self.lan=lan
         self.modes={}
         self.intents=[]
         self.entities=[]
+        self.parser_port=parser_port
+        
+        super(Parser, self).__init__(
+                *args, **kwargs)
 
-        self.engine=SnipsNLUEngine()
+        # self.engine=SnipsNLUEngine()
 
-    def setConnection(self): 
+    def setup(self):
 
+        raise
         if self.parser_port:
-            self.socket = self.getConnection(kind='REP')
-            self.socket.bind(f'tcp://*:{self.parser_port}')
+            raise
+            self.port=self.parser_port
+            super().setup()
+
+    def run(self):
+
+        self.connect.set(kind='REP')
+        self.connect.run()
 
     def add(self, mode, paths): 
 
-        if not mode in self.modes: self.modes[mode]=[]
+        if not mode in self.modes: 
+            self.modes[mode]=[]
 
         mode_intents=[]
         mode_entities=[]
@@ -52,7 +68,7 @@ class Parser(Plug):
     def fit(self): 
 
         self.dataset = Dataset(
-                'en', 
+                self.lan, 
                 self.intents, 
                 self.entities)
         self.engine.fit(self.dataset.json)
@@ -60,7 +76,8 @@ class Parser(Plug):
     def parse(self, text, mode=None, prob=.5, count=1):
 
         intents=self.modes.get(mode, None)
-        return self.engine.parse(text, intents=intents)
+        return self.engine.parse(
+                text, intents=intents)
 
 def run():
 
