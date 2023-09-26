@@ -1,0 +1,19 @@
+---
+type: entity
+name: keyword
+automatically_extensible: yes
+
+---
+type: intent
+name: UmayManager_setMode
+slots:
+  - name: keyworkd
+    entity: keyword 
+utterances:
+  - set [keyword](keyboard)
+  - set [keyword](player)
+  - set [keyword](window)
+  - set [keyword](lura)
+  - set [keyword](feh)
+  - set [keyword](vim)
+  - set [keyword](tmux)

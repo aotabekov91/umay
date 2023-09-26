@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "umay"
+version = "0.0.1"
+description = "A speech handler"
+authors = ["A O <adhambek.otabekov.post@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+plug = {git = "https://github.com/aotabekov91/plug", branch='main'}
+
+[tool.poetry.scripts]
+umayc = "umay.cli:run"
+umayd = "umay.main:run"
+umayp = "umay.parser:run"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
