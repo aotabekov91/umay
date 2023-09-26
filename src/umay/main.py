@@ -67,6 +67,14 @@ class Umay(Handler):
             respond=self.parser_socket.recv_json()
             print(respond)
 
+    def m_register(self, mode, keyword, port, kind): 
+
+        if port:
+            socket=self.getConnection(kind)
+            socket.connect(f'tcp://localhost:{port}')
+            self.sockets[mode]=(socket, kind)
+            self.modes[keyword]=mode
+
     def parse(self, 
               text, 
               mode=None, 
@@ -81,13 +89,23 @@ class Umay(Handler):
               }
         self.queue.put(data)
 
-    def m_register(self, mode, keyword, port, kind): 
+    def m_parse(self, respond):
 
-        if port:
-            socket=self.getConnection(kind)
-            socket.connect(f'tcp://localhost:{port}')
-            self.sockets[mode]=(socket, kind)
-            self.modes[keyword]=mode
+        result=respond.get('result', {})
+        intent=result.get('intent', {})
+        slots=result.get('slots', {})
+        intent_name=intent.get('intentName', None)
+
+        if intent_name:
+            nm=intent_name.split('_', 1)
+            if len(nm)==2:
+                req={}
+                mode, action = nm[0], nm[1]
+                req={'action': action}
+                for s in slots:
+                    value=s['value']['value']
+                    req[s['slotName']]=value
+                return mode, req
 
     def m_setMode(self, keyword): 
 
@@ -118,24 +136,6 @@ class Umay(Handler):
                     respond=socket.recv_json()
                     print(respond)
                     return respond
-
-    def m_parse(self, respond):
-
-        result=respond.get('result', {})
-        intent=result.get('intent', {})
-        slots=result.get('slots', {})
-        intent_name=intent.get('intentName', None)
-
-        if intent_name:
-            nm=intent_name.split('_', 1)
-            if len(nm)==2:
-                req={}
-                mode, action = nm[0], nm[1]
-                req={'action': action}
-                for s in slots:
-                    value=s['value']['value']
-                    req[s['slotName']]=value
-                return mode, req
 
 def run():
 
