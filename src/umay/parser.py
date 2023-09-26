@@ -27,11 +27,8 @@ class Parser(Handler):
 
     def setup(self):
 
-        raise
-        if self.parser_port:
-            raise
-            self.port=self.parser_port
-            super().setup()
+        super().setup()
+        self.setConnect(self.parser_port)
 
     def run(self):
 
@@ -42,27 +39,19 @@ class Parser(Handler):
 
         if not mode in self.modes: 
             self.modes[mode]=[]
-
-        mode_intents=[]
-        mode_entities=[]
-
+        i, e = [], []
         for doc in paths:
             if doc:
-                for block in doc:
-                    block_type = block.get("type")
-
-                    if block_type == "entity":
-                        mode_entities.append(
-                                Entity.from_yaml(block))
-                    elif block_type == "intent":
-                        mode_intents.append(
-                                Intent.from_yaml(block))
-
-        for intent in mode_intents:
-            self.modes[mode]+=[intent.intent_name]
-
-        self.intents+=mode_intents
-        self.entities+=mode_entities
+                for b in doc:
+                    btype = b.get("type")
+                    if btype == "entity":
+                        e.append(Entity.from_yaml(b))
+                    elif btype == "intent":
+                        i.append(Intent.from_yaml(b))
+        for p in i:
+            self.modes[mode]+=[p.intent_name]
+        self.intents+=i
+        self.entities+=e
         self.fit()
 
     def fit(self): 
@@ -73,11 +62,15 @@ class Parser(Handler):
                 self.entities)
         self.engine.fit(self.dataset.json)
 
-    def parse(self, text, mode=None, prob=.5, count=1):
+    def parse(self, 
+              text, 
+              mode=None, 
+              prob=.5, 
+              count=1):
 
-        intents=self.modes.get(mode, None)
+        i=self.modes.get(mode, None)
         return self.engine.parse(
-                text, intents=intents)
+                text, intents=i)
 
 def run():
 

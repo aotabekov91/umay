@@ -1,47 +1,54 @@
-from plug import Plug
 from queue import Queue
 from threading import Thread
+from plug.plugs.generic import Generic
+from plug.plugs.handler import Handler
 
-from .mode import Generic, UmayManager
+class Umay(Handler):
 
-class Umay(Plug):
+    def __init__(self, 
+                 *args, 
+                 **kwargs):
 
-    def __init__(self):
+        super(Umay, self).__init__(
+                *args,
+                **kwargs
+                )
 
-        super().__init__(respond_port=True)
-
+        self.modes={}
+        self.sockets={}
+        self.current=None
         self.queue=Queue()
-        self.manager=UmayManager(self)
         self.generic=Generic()
-
-    def registerByUmay(self): pass
 
     def setConnection(self):
 
-        super().setConnection(kind='REP')
-
+        super().setConnection(
+                kind='REP')
         if self.parser_port:
             self.parser_socket = self.getConnection(kind='REQ')
             self.parser_socket.connect(
                     f'tcp://localhost:{self.parser_port}')
 
-    def run(self):
+    def listen(self):
 
-        self.running=True
-
-        def listen_queue():
-
+        def _listen():
             while self.running:
                 data=self.queue.get()
                 self.parser_socket.send_json(data)
-                respond=self.parser_socket.recv_json()
-                print('Received from parser: ', respond) 
-                self.manager.act(respond)
+                r=self.parser_socket.recv_json()
+                print('Received from parser: ', r) 
+                self.m_act(r)
 
-        t=Thread(target=listen_queue)
+        t=Thread(target=_listen)
         t.daemon=True
         t.start()
-        super().run()
+
+    def run(self):
+
+        self.running=True
+        self.listen()
+        self.connect.set(kind='REP')
+        self.connect.run()
 
     def register(self, 
                  mode, 
@@ -52,7 +59,7 @@ class Umay(Plug):
                  **kwargs,
                  ):
 
-        self.manager.register(mode, keyword, port, kind)
+        self.m_register(mode, keyword, port, kind)
 
         if any(paths):
             data={'action':'add', 'mode':mode, 'paths':paths}
@@ -60,9 +67,11 @@ class Umay(Plug):
             respond=self.parser_socket.recv_json()
             print(respond)
 
-    def getModes(self): raise
-
-    def parse(self, text, mode=None, prob=0.5, count=1):
+    def parse(self, 
+              text, 
+              mode=None, 
+              prob=0.5, 
+              count=1):
 
         data={'text':text,
               'mode':mode,
@@ -71,6 +80,62 @@ class Umay(Plug):
               'action':'parse',
               }
         self.queue.put(data)
+
+    def m_register(self, mode, keyword, port, kind): 
+
+        if port:
+            socket=self.getConnection(kind)
+            socket.connect(f'tcp://localhost:{port}')
+            self.sockets[mode]=(socket, kind)
+            self.modes[keyword]=mode
+
+    def m_setMode(self, keyword): 
+
+        mode=self.modes.get(keyword, None)
+        if mode: 
+            self.current=mode
+        print('Umay mode: ', self.current) 
+
+    def m_act(self, respond):
+
+        todo=self.parse(respond)
+        print('Umay to do: ', todo)
+
+        if todo:
+
+            mode, request = todo
+            if mode==self.name:
+                self.handle(request)
+            else:
+                if mode!='Generic': self.current=mode
+
+                socket, kind=self.sockets.get(
+                        self.current, (None, None))
+
+                if socket: 
+                    socket.send_json(request)
+                if kind in ['REQ']:
+                    respond=socket.recv_json()
+                    print(respond)
+                    return respond
+
+    def m_parse(self, respond):
+
+        result=respond.get('result', {})
+        intent=result.get('intent', {})
+        slots=result.get('slots', {})
+        intent_name=intent.get('intentName', None)
+
+        if intent_name:
+            nm=intent_name.split('_', 1)
+            if len(nm)==2:
+                req={}
+                mode, action = nm[0], nm[1]
+                req={'action': action}
+                for s in slots:
+                    value=s['value']['value']
+                    req[s['slotName']]=value
+                return mode, req
 
 def run():
 
