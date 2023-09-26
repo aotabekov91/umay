@@ -7,47 +7,58 @@ class Umay(Handler):
 
     def __init__(self, 
                  *args, 
+                 parser_port=None,
+                 handler_port=None,
                  **kwargs):
+
+        self.modes={}
+        self.sockets={}
+        self.prev=None
+        self.parser=None
+        self.current=None
+        self.queue=Queue()
+        self.generic=Generic()
+        self.parser_port=parser_port
+        self.handler_port=handler_port
 
         super(Umay, self).__init__(
                 *args,
                 **kwargs
                 )
 
-        self.modes={}
-        self.sockets={}
-        self.current=None
-        self.queue=Queue()
-        self.generic=Generic()
+    def setup(self):
 
-    def setConnection(self):
+        super().setup()
+        self.setConnect(self.handler_port)
+        self.connect.set()
+        self.setParserConnect()
 
-        super().setConnection(
-                kind='REP')
+    def setParserConnect(self):
+
         if self.parser_port:
-            self.parser_socket = self.getConnection(kind='REQ')
-            self.parser_socket.connect(
-                    f'tcp://localhost:{self.parser_port}')
+            self.parser = self.connect.get(kind='REQ')
+            port=f'tcp://localhost:{self.parser_port}'
+            self.parser.connect(port)
 
     def listen(self):
 
-        def _listen():
+        def run():
             while self.running:
-                data=self.queue.get()
-                self.parser_socket.send_json(data)
-                r=self.parser_socket.recv_json()
-                print('Received from parser: ', r) 
-                self.m_act(r)
+                req=self.queue.get()
+                self.parser.send_json(req)
+                res=self.parser.recv_json()
+                self.act(res)
+                print('Received from parser: ', res) 
 
-        t=Thread(target=_listen)
-        t.daemon=True
-        t.start()
+        if self.parser:
+            self.running=True
+            t=Thread(target=run)
+            t.daemon=True
+            t.start()
 
     def run(self):
 
-        self.running=True
         self.listen()
-        self.connect.set(kind='REP')
         self.connect.run()
 
     def register(self, 
@@ -59,21 +70,18 @@ class Umay(Handler):
                  **kwargs,
                  ):
 
-        self.m_register(mode, keyword, port, kind)
+        self.modes[keyword]=mode
+
+        if port:
+            socket=self.connect.get(kind)
+            socket.connect(f'tcp://localhost:{port}')
+            self.sockets[mode]=(socket, kind)
 
         if any(paths):
             data={'action':'add', 'mode':mode, 'paths':paths}
-            self.parser_socket.send_json(data)
-            respond=self.parser_socket.recv_json()
+            self.parser.send_json(data)
+            respond=self.parser.recv_json()
             print(respond)
-
-    def m_register(self, mode, keyword, port, kind): 
-
-        if port:
-            socket=self.getConnection(kind)
-            socket.connect(f'tcp://localhost:{port}')
-            self.sockets[mode]=(socket, kind)
-            self.modes[keyword]=mode
 
     def parse(self, 
               text, 
@@ -114,7 +122,7 @@ class Umay(Handler):
             self.current=mode
         print('Umay mode: ', self.current) 
 
-    def m_act(self, respond):
+    def act(self, respond):
 
         todo=self.parse(respond)
         print('Umay to do: ', todo)
