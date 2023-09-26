@@ -17,8 +17,6 @@ class Parser(Plug):
 
         self.engine=SnipsNLUEngine()
 
-    def registerByUmay(self): pass
-
     def setConnection(self): 
 
         if self.parser_port:
