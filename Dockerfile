@@ -1,11 +1,15 @@
-from ubuntu:20.04
+from snips_nlu 
 
-expose 20001
-workdir /code
+# from ubuntu
+# expose 20001
+# workdir /code
+# run apt update && apt install -y python3 && apt install -y python3-pip && apt install -y git
+# copy requirements.txt requirements.txt
+# run pip install -r requirements.txt
+# run git clone https://github.com/aotabekov91/umay
+# run cd umay && pip install .
 
-run apt update && apt install -y python3 && apt install -y python3-pip && apt install -y git
-run git clone https://github.com/aotabekov91/umay
-run pip install 'umay[parser]'
-run pip install snips_nlu && python3 -m snips_nlu download en
+run rm -rf umay;  git clone https://github.com/aotabekov91/umay
+run cd umay && pip install  .
 
 # cmd ["umayp"]

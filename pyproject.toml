@@ -7,17 +7,12 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-cython = {optional=true, version = ">=3.0.2"}
-setuptools-rust = {optional=true, version = ">=1.7.0"}
 plug = {git = "https://github.com/aotabekov91/plug", branch='main'}
-
-[tool.poetry.extras]
-parser=["setuptools-rust", "cython"]
 
 [tool.poetry.scripts]
 umayc = "umay.cli:run"
 umayd = "umay.main:run"
-umayp = { callable = "umay.parser:run", extras = ["parser"] }
+umayp = "umay.parser:run"
 
 [build-system]
 requires = ["poetry-core"]
