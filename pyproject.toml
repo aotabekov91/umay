@@ -1,38 +1,24 @@
-[build-system]
-
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
-
-[project]
-
+[tool.poetry]
 name = "umay"
 version = "0.0.1"
-description = "Umay"
+description = "A speech handler"
+authors = ["A O <adhambek.otabekov.post@gmail.com>"]
 readme = "README.md"
-dependencies = [
-	'plug==0.0.1', 
-	'pyzmq==25.0.2', 
-  ]
 
-[project.optional-dependencies]
+[tool.poetry.dependencies]
+python = "^3.9"
+cython = {optional=true, version = ">=3.0.2"}
+setuptools-rust = {optional=true, version = ">=1.7.0"}
+plug = {git = "https://github.com/aotabekov91/plug", branch='main'}
 
-snips_nlu = [
-  'setuptools-rust',
-  'cython',
-  'snips_nlu', 
-  'numpy==1.20.0'
-  ]
+[tool.poetry.extras]
+parser=["setuptools-rust", "cython"]
 
-[project.scripts]
+[tool.poetry.scripts]
+umayc = "umay.cli:run"
+umayd = "umay.main:run"
+umayp = { callable = "umay.parser:run", extras = ["parser"] }
 
-umayc = "umay.cli:main"
-umayd = "umay.main:main"
-umayp = "umay.parser:main"
-
-[tool.setuptools.package-data]
-
-"*" = ["*"] 
-
-[tool.setuptools.packages.find]
-
-where = ["src"]
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

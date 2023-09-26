@@ -49,6 +49,7 @@ class Umay(Plug):
                  port, 
                  paths,
                  kind,
+                 **kwargs,
                  ):
 
         self.manager.register(mode, keyword, port, kind)
@@ -71,7 +72,7 @@ class Umay(Plug):
               }
         self.queue.put(data)
 
-def main():
+def run():
 
     app=Umay()
     app.run()

@@ -43,7 +43,7 @@ class UmayCLI(Plug):
         elif args.command=='exit':
             self.runAction('exit')
 
-def main():
+def run():
 
     cli = UmayCLI()
     cli.run()
