@@ -11,6 +11,7 @@ class Parser(Handler):
             self, 
             *args, 
             lan='en',
+            respond=True,
             parser_port=None,
             **kwargs):
 
@@ -19,9 +20,10 @@ class Parser(Handler):
         self.intents=[]
         self.entities=[]
         self.parser_port=parser_port
-        
         super(Parser, self).__init__(
-                *args, **kwargs)
+                *args, 
+                respond=respond,
+                **kwargs)
 
         # self.engine=SnipsNLUEngine()
 
@@ -57,17 +59,18 @@ class Parser(Handler):
                 self.lan, 
                 self.intents, 
                 self.entities)
-        self.engine.fit(self.dataset.json)
+        # self.engine.fit(self.dataset.json)
 
     def parse(self, 
               text, 
-              mode=None, 
               prob=.5, 
-              count=1):
+              count=1,
+              mode=None, 
+              ):
 
         i=self.modes.get(mode, None)
-        return self.engine.parse(
-                text, intents=i)
+        # return self.engine.parse(
+                # text, intents=i)
 
 def run():
 

@@ -11,11 +11,13 @@ class Umay(Handler):
                  handler_port=None,
                  **kwargs):
 
-        self.modes={}
+        self.modes=[]
         self.sockets={}
+        self.keywords={}
+
         self.prev=None
-        self.parser=None
         self.current=None
+        self.parser=None
         self.queue=Queue()
         self.generic=Generic()
         self.parser_port=parser_port
@@ -30,120 +32,114 @@ class Umay(Handler):
 
         super().setup()
         self.setConnect(self.handler_port)
-        self.connect.set()
         self.setParserConnect()
 
     def setParserConnect(self):
 
         if self.parser_port:
-            self.parser = self.connect.get(kind='REQ')
-            port=f'tcp://localhost:{self.parser_port}'
-            self.parser.connect(port)
+            self.parser = self.connect.get(
+                    kind='REQ')
+            self.parser.connect(
+                    f'tcp://localhost:{self.parser_port}')
 
-    def listen(self):
+    def runListen(self):
+        pass
+
+    def runQueue(self):
 
         def run():
             while self.running:
                 req=self.queue.get()
-                self.parser.send_json(req)
+                print(f'Umay sending to parser: {req}')
+                self.parser.send_json(
+                        {'parse': req})
                 res=self.parser.recv_json()
-                self.act(res)
-                print('Received from parser: ', res) 
+                self.act(res.get('parse', None))
 
         if self.parser:
             self.running=True
-            t=Thread(target=run)
-            t.daemon=True
-            t.start()
+            thread=Thread(target=run)
+            thread.daemon=True
+            thread.start()
+            return thread
 
     def run(self):
 
-        self.listen()
-        self.connect.run()
+        self.runQueue()
+        self.runListen()
+        super().run()
 
     def register(self, 
                  mode, 
-                 keyword, 
                  port, 
-                 paths,
-                 kind,
+                 paths=[],
+                 kind='PUSH',
+                 keyword=None, 
                  **kwargs,
                  ):
 
-        self.modes[keyword]=mode
+        self.modes+=[mode]
+
+        if keyword:
+            self.keywords[keyword]=mode
 
         if port:
             socket=self.connect.get(kind)
-            socket.connect(f'tcp://localhost:{port}')
+            socket.connect(
+                    f'tcp://localhost:{port}')
             self.sockets[mode]=(socket, kind)
 
         if any(paths):
-            data={'action':'add', 'mode':mode, 'paths':paths}
-            self.parser.send_json(data)
+            data={'mode':mode, 'paths':paths}
+            self.parser.send_json({'add': data})
             respond=self.parser.recv_json()
             print(respond)
 
-    def parse(self, 
-              text, 
-              mode=None, 
-              prob=0.5, 
-              count=1):
+    def parse(self, **kwargs):
+        self.queue.put(kwargs)
 
-        data={'text':text,
-              'mode':mode,
-              'prob':prob,
-              'count':count,
-              'action':'parse',
-              }
-        self.queue.put(data)
-
-    def m_parse(self, respond):
+    def getAction(self, respond):
 
         result=respond.get('result', {})
         intent=result.get('intent', {})
         slots=result.get('slots', {})
-        intent_name=intent.get('intentName', None)
+        iname=intent.get('intentName', None)
 
-        if intent_name:
-            nm=intent_name.split('_', 1)
+        if iname:
+            nm=iname.split('_', 1)
             if len(nm)==2:
-                req={}
                 mode, action = nm[0], nm[1]
-                req={'action': action}
+                req={}
                 for s in slots:
-                    value=s['value']['value']
-                    req[s['slotName']]=value
-                return mode, req
+                    v=s['value']['value']
+                    req[s['slotName']]=v
+                return mode, {action: req}
 
-    def m_setMode(self, keyword): 
+    def setMode(
+            self, 
+            mode=None, 
+            keyword=None): 
 
-        mode=self.modes.get(keyword, None)
+        if keyword:
+            mode=self.keywords.get(
+                    keyword, None)
         if mode: 
             self.current=mode
-        print('Umay mode: ', self.current) 
 
     def act(self, respond):
 
-        todo=self.parse(respond)
-        print('Umay to do: ', todo)
-
-        if todo:
-
-            mode, request = todo
-            if mode==self.name:
-                self.handle(request)
-            else:
-                if mode!='Generic': self.current=mode
-
-                socket, kind=self.sockets.get(
-                        self.current, (None, None))
-
-                if socket: 
-                    socket.send_json(request)
-                if kind in ['REQ']:
-                    respond=socket.recv_json()
-                    print(respond)
-                    return respond
+        action=None
+        if respond:
+            action=self.getAction(respond)
+        if action:
+            m, r = action
+            if m!='Generic': 
+                self.setMode(mode=m)
+            con=self.sockets.get(
+                    self.current, None)
+            if con:
+                socket, kind= con
+                socket.send_json(r)
 
 def run():
 
