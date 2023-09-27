@@ -28,12 +28,9 @@ class Parser(Handler):
     def setup(self):
 
         super().setup()
-        self.setConnect(self.parser_port)
-        self.connect.set(kind='REP')
-
-    def run(self):
-
-        self.connect.run()
+        self.setConnect(
+                port=self.parser_port,
+                kind='REP')
 
     def add(self, mode, paths): 
 
