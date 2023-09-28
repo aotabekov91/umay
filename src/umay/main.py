@@ -1,41 +1,27 @@
-from plug.plugs.generic import Generic
 from plug.plugs.handler import Handler
+
+from .parser import Parser
+from .generic import Generic
 
 class Umay(Handler):
 
-    def __init__(self, 
-                 *args, 
-                 parser_port=None,
-                 handler_port=None,
-                 **kwargs):
+    def __init__(self): 
 
         self.modes=[]
         self.sockets={}
         self.keywords={}
-        self.parser=None
         self.prev=None
         self.current=None
-        self.generic=Generic()
-        self.parser_port=parser_port
-        self.handler_port=handler_port
+        self.umay_port=None
 
-        super(Umay, self).__init__(
-                *args,
-                **kwargs
-                )
+        super(Umay, self).__init__()
 
     def setup(self):
 
         super().setup()
-        self.setConnect(self.handler_port)
-        self.setParserConnect()
-
-    def setParserConnect(self):
-
-        if self.parser_port:
-            self.parser = self.connect.get('PUSH')
-            self.parser.connect(
-                    f'tcp://localhost:{self.parser_port}')
+        self.parser=Parser(self)
+        self.generic=Generic(self.umay_port)
+        self.setConnect(self.umay_port)
 
     def register(self, 
                  mode, 
@@ -55,33 +41,30 @@ class Umay(Handler):
                     f'tcp://localhost:{port}')
             self.sockets[mode]=(socket, kind)
         if any(paths):
-            data={'mode':mode, 'paths':paths}
-            self.parser.send_json({'add': data})
+            self.parser.add(mode, paths)
 
     def parse(self, **kwargs):
 
-        self.parser.send_json(
-                {'parse': kwargs})
+        self.parser.serve(**kwargs)
 
     def getAction(self, result):
 
         intent=result.get('intent', {})
         slots=result.get('slots', {})
         iname=intent.get('intentName', None)
-
         if iname:
             nm=iname.split('_', 1)
             if len(nm)==2:
-                mode, action = nm[0], nm[1]
                 req={}
+                mode, action = nm[0], nm[1]
                 for s in slots:
                     v=s['value']['value']
                     req[s['slotName']]=v
                 return mode, {action: req}
 
-    def act(self, **kwargs):
+    def act(self, result):
 
-        action=self.getAction(**kwargs)
+        action=self.getAction(result)
         if action:
             m, r = action
             if m!='Generic': 
@@ -91,6 +74,12 @@ class Umay(Handler):
             if con:
                 socket, kind= con
                 socket.send_json(r)
+
+    def run(self):
+
+        self.running=True
+        self.parser.run()
+        super().run()
 
 def run():
 

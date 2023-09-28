@@ -1,41 +1,41 @@
-from plug.plugs.handler import Handler
+from queue import Queue
+from threading import Thread
 
-from snips_nlu import SnipsNLUEngine
-from snips_nlu.dataset import Dataset
-from snips_nlu.dataset.entity import Entity
-from snips_nlu.dataset.intent import Intent
+# from snips_nlu import SnipsNLUEngine
+# from snips_nlu.dataset import Dataset
+# from snips_nlu.dataset.entity import Entity
+# from snips_nlu.dataset.intent import Intent
 
-class Parser(Handler):
+class Parser:
 
     def __init__(
             self, 
-            *args, 
-            lan='en',
-            parser_port=None,
-            **kwargs):
+            handler,
+            lan='en'):
 
         self.lan=lan
         self.modes={}
         self.intents=[]
         self.entities=[]
-        self.parser_port=parser_port
-        super(Parser, self).__init__(
-                *args, **kwargs)
-        self.engine=SnipsNLUEngine()
+        self.queue=Queue()
+        self.handler=handler
+        # self.engine=SnipsNLUEngine()
 
-    def setup(self):
+    def run(self):
 
-        super().setup()
-        self.setConnect(
-                port=self.parser_port,
-                kind='PULL')
-        self.setHandlerConnect()
+        def listen():
+            while self.handler.running:
+                data=self.queue.get()
+                result=self.parse(**data)
+                self.handler.act(result)
 
-    def setHandlerConnect(self):
+        thread=Thread(target=listen)
+        thread.deamon=True
+        thread.start()
+        return thread
 
-        self.handler=self.connect.get('PUSH')
-        self.handler.connect(
-                    f'tcp://localhost:{self.handler_port}')
+    def serve(self, **kwargs):
+        self.queue.put(kwargs)
 
     def add(self, mode, paths): 
 
@@ -72,12 +72,6 @@ class Parser(Handler):
               ):
 
         mintents=self.modes.get(mode, None)
-        parsed=self.engine.parse(
-                text, intents=mintents)
-        self.handler.send_json(
-                {'act': parsed})
-
-def run():
-
-    parser=Parser()
-    parser.run()
+        return self.engine.parse(
+                text, 
+                intents=mintents)

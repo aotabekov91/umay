@@ -1,15 +1,10 @@
-from snips_nlu 
-
-# from ubuntu
-expose 19999
-expose 20001
-# workdir /code
+# from ubuntu:20.04
+# expose 19999
+# workdir /code/umay
 # run apt update && apt install -y python3 && apt install -y python3-pip && apt install -y git
-## copy requirements.txt requirements.txt
-# run pip install -r requirements.txt
-# run git clone https://github.com/aotabekov91/umay
-# run cd umay && pip install .
-# cmd umayp
+# run pip install snips_nlu
 
-run rm -rf umay;  git clone https://github.com/aotabekov91/umay
-run cd umay && pip install  .
+from ready
+copy . . 
+run pip install .
+cmd ["umayd"]
