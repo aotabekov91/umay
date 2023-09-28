@@ -12,4 +12,4 @@ expose 20001
 # cmd umayp
 
 run rm -rf umay;  git clone https://github.com/aotabekov91/umay
-run cd umay && pip install  .
+# run cd umay && pip install  .
