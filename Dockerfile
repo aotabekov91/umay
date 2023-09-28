@@ -1,7 +1,8 @@
 from snips_nlu 
 
 # from ubuntu
-# expose 20001
+expose 19999
+expose 20001
 # workdir /code
 # run apt update && apt install -y python3 && apt install -y python3-pip && apt install -y git
 ## copy requirements.txt requirements.txt

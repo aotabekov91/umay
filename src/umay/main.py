@@ -1,5 +1,3 @@
-from queue import Queue
-from threading import Thread
 from plug.plugs.generic import Generic
 from plug.plugs.handler import Handler
 
@@ -14,11 +12,9 @@ class Umay(Handler):
         self.modes=[]
         self.sockets={}
         self.keywords={}
-
+        self.parser=None
         self.prev=None
         self.current=None
-        self.parser=None
-        self.queue=Queue()
         self.generic=Generic()
         self.parser_port=parser_port
         self.handler_port=handler_port
@@ -37,37 +33,9 @@ class Umay(Handler):
     def setParserConnect(self):
 
         if self.parser_port:
-            self.parser = self.connect.get(
-                    kind='REQ')
+            self.parser = self.connect.get('PUSH')
             self.parser.connect(
                     f'tcp://localhost:{self.parser_port}')
-
-    def runListen(self):
-        pass
-
-    def runQueue(self):
-
-        def run():
-            while self.running:
-                req=self.queue.get()
-                print(f'Umay sending to parser: {req}')
-                self.parser.send_json(
-                        {'parse': req})
-                res=self.parser.recv_json()
-                self.act(res.get('parse', None))
-
-        if self.parser:
-            self.running=True
-            thread=Thread(target=run)
-            thread.daemon=True
-            thread.start()
-            return thread
-
-    def run(self):
-
-        self.runQueue()
-        self.runListen()
-        super().run()
 
     def register(self, 
                  mode, 
@@ -79,28 +47,24 @@ class Umay(Handler):
                  ):
 
         self.modes+=[mode]
-
         if keyword:
             self.keywords[keyword]=mode
-
         if port:
             socket=self.connect.get(kind)
             socket.connect(
                     f'tcp://localhost:{port}')
             self.sockets[mode]=(socket, kind)
-
         if any(paths):
             data={'mode':mode, 'paths':paths}
             self.parser.send_json({'add': data})
-            respond=self.parser.recv_json()
-            print(respond)
 
     def parse(self, **kwargs):
-        self.queue.put(kwargs)
 
-    def getAction(self, respond):
+        self.parser.send_json(
+                {'parse': kwargs})
 
-        result=respond.get('result', {})
+    def getAction(self, result):
+
         intent=result.get('intent', {})
         slots=result.get('slots', {})
         iname=intent.get('intentName', None)
@@ -115,26 +79,13 @@ class Umay(Handler):
                     req[s['slotName']]=v
                 return mode, {action: req}
 
-    def setMode(
-            self, 
-            mode=None, 
-            keyword=None): 
+    def act(self, **kwargs):
 
-        if keyword:
-            mode=self.keywords.get(
-                    keyword, None)
-        if mode: 
-            self.current=mode
-
-    def act(self, respond):
-
-        action=None
-        if respond:
-            action=self.getAction(respond)
+        action=self.getAction(**kwargs)
         if action:
             m, r = action
             if m!='Generic': 
-                self.setMode(mode=m)
+                self.current=m
             con=self.sockets.get(
                     self.current, None)
             if con:

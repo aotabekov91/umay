@@ -1,9 +1,9 @@
 from plug.plugs.handler import Handler
 
-# from snips_nlu import SnipsNLUEngine
-# from snips_nlu.dataset import Dataset
-# from snips_nlu.dataset.entity import Entity
-# from snips_nlu.dataset.intent import Intent
+from snips_nlu import SnipsNLUEngine
+from snips_nlu.dataset import Dataset
+from snips_nlu.dataset.entity import Entity
+from snips_nlu.dataset.intent import Intent
 
 class Parser(Handler):
 
@@ -11,7 +11,6 @@ class Parser(Handler):
             self, 
             *args, 
             lan='en',
-            respond=True,
             parser_port=None,
             **kwargs):
 
@@ -21,18 +20,22 @@ class Parser(Handler):
         self.entities=[]
         self.parser_port=parser_port
         super(Parser, self).__init__(
-                *args, 
-                respond=respond,
-                **kwargs)
-
-        # self.engine=SnipsNLUEngine()
+                *args, **kwargs)
+        self.engine=SnipsNLUEngine()
 
     def setup(self):
 
         super().setup()
         self.setConnect(
                 port=self.parser_port,
-                kind='REP')
+                kind='PULL')
+        self.setHandlerConnect()
+
+    def setHandlerConnect(self):
+
+        self.handler=self.connect.get('PUSH')
+        self.handler.connect(
+                    f'tcp://localhost:{self.handler_port}')
 
     def add(self, mode, paths): 
 
@@ -59,7 +62,7 @@ class Parser(Handler):
                 self.lan, 
                 self.intents, 
                 self.entities)
-        # self.engine.fit(self.dataset.json)
+        self.engine.fit(self.dataset.json)
 
     def parse(self, 
               text, 
@@ -68,9 +71,11 @@ class Parser(Handler):
               mode=None, 
               ):
 
-        i=self.modes.get(mode, None)
-        # return self.engine.parse(
-                # text, intents=i)
+        mintents=self.modes.get(mode, None)
+        parsed=self.engine.parse(
+                text, intents=mintents)
+        self.handler.send_json(
+                {'act': parsed})
 
 def run():
 
