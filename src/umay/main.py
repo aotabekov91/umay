@@ -1,9 +1,8 @@
 from plug.plugs.handler import Handler
 
 from .parser import Parser
-from .generic import Generic
 
-class Umay(Handler):
+class UmayDeamon(Handler):
 
     def __init__(self): 
 
@@ -13,25 +12,24 @@ class Umay(Handler):
         self.prev=None
         self.current=None
         self.umay_port=None
-
-        super(Umay, self).__init__()
+        super(UmayDeamon, self).__init__()
 
     def setup(self):
 
         super().setup()
         self.parser=Parser(self)
-        self.generic=Generic(self.umay_port)
         self.setConnect(self.umay_port)
 
-    def register(self, 
-                 mode, 
-                 port, 
-                 paths=[],
-                 kind='PUSH',
-                 keyword=None, 
-                 **kwargs,
-                 ):
+    def register(self, data):
 
+        raise
+        for mode, d in data.items():
+
+            port=d.get('port', None)
+            paths=d.get('paths', [])
+            kind=d.get('kind', 'PUSH')
+            keyword=d.get('keyword', None)
+            
         self.modes+=[mode]
         if keyword:
             self.keywords[keyword]=mode
@@ -40,8 +38,9 @@ class Umay(Handler):
             socket.connect(
                     f'tcp://localhost:{port}')
             self.sockets[mode]=(socket, kind)
-        if any(paths):
-            self.parser.add(mode, paths)
+        print(mode, port, paths)
+        # if any(paths):
+            # self.parser.add(mode, paths)
 
     def parse(self, **kwargs):
 
@@ -83,5 +82,5 @@ class Umay(Handler):
 
 def run():
 
-    app=Umay()
+    app=UmayDeamon()
     app.run()

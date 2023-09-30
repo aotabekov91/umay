@@ -13,4 +13,4 @@ class Generic(Plug):
         self.load()
 
     def load(self):
-        self.umay.load([self])
+        self.umay.load({'Generic':self})
