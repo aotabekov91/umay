@@ -6,7 +6,6 @@ run pip install 'numpy==1.20'
 run pip install snips_nlu
 run python3 -m snips_nlu download en
 
-# from ready
 copy . . 
 run pip install .
-# cmd ["umayd"]
+cmd ["umayd"]

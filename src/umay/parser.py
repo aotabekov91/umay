@@ -60,15 +60,15 @@ class Parser:
 
         if not mode in self.modes: 
             self.modes[mode]={}
-        for n, us in units.items():
-            for u in us:
-                if u.get("type") == "entity":
-                    l=Entity.from_yaml(u)
-                    self.entities.append(l)
-                elif u.get("type") == "intent":
-                    l=Intent.from_yaml(u)
-                    self.intents.append(l)
-                    self.modes[mode][n]=l
+            for n, us in units.items():
+                for u in us:
+                    if u.get("type") == "entity":
+                        l=Entity.from_yaml(u)
+                        self.entities.append(l)
+                    elif u.get("type") == "intent":
+                        l=Intent.from_yaml(u)
+                        self.intents.append(l)
+                        self.modes[mode][n]=l
 
     def fit(self): 
 

@@ -1,7 +1,5 @@
 from plug.plugs.handler import Handler
 
-from .parser import Parser
-
 class UmayDeamon(Handler):
 
     def __init__(self): 
@@ -12,7 +10,6 @@ class UmayDeamon(Handler):
         self.current=None
         self.umay_port=None
         super(UmayDeamon, self).__init__()
-        self.parser=Parser(self)
 
     def setup(self):
 
@@ -21,10 +18,17 @@ class UmayDeamon(Handler):
                 socket_kind='bind',
                 port=self.umay_port
                 )
+        self.setParserConnect()
+
+    def setParserConnect(self):
+
+        self.psocket=self.connect.get('PUSH')
+        self.psocket.connect(
+                f'tcp://localhost:{self.parser_port}')
 
     def register(
             self, 
-            name=None,
+            mode=None,
             port=None,
             kind='PUSH',
             units=[]):
@@ -33,28 +37,31 @@ class UmayDeamon(Handler):
             socket=self.connect.get(kind)
             socket.connect(
                     f'tcp://localhost:{port}')
-            self.sockets[name]=(socket, kind)
+            self.sockets[mode]=(socket, kind, port)
         if units:
-            self.parser.register(name, units)
-            self.parser.fit()
+            cmd={'register':{'mode':mode, 'units':units}}
+            self.psocket.send_json(cmd)
+            cmd={'fit':{}}
+            self.psocket.send_json(cmd)
 
     def parse(self, **kwargs):
-        self.parser.parse(**kwargs)
+
+        cmd={'parse':kwargs}
+        self.psocket.send_json(cmd)
 
     def getAction(self, result):
 
         intent=result.get('intent', {})
-        slots=result.get('slots', {})
+        slots=result.get('slots', [])
         iname=intent.get('intentName', None)
         if iname:
-            nm=iname.split('_', 1)
-            if len(nm)==2:
-                req={}
-                mode, action = nm[0], nm[1]
-                for s in slots:
-                    v=s['value']['value']
-                    req[s['slotName']]=v
-                return mode, {action: req}
+            req={}
+            d=iname.split('_', 1)
+            mode, action = d[0], d[1], d[2]
+            for s in slots:
+                v=s['value']['value']
+                req[s['slotName']]=v
+            return mode, {action: req}
 
     def act(self, result):
 
@@ -66,13 +73,15 @@ class UmayDeamon(Handler):
             con=self.sockets.get(
                     self.current, None)
             if con:
-                socket, kind= con
+                socket, kind, port = con
+                print('Connection: ', con)
                 socket.send_json(r)
+        print(action, self.current)
+        print(self.sockets)
 
     def run(self):
 
         self.running=True
-        self.parser.run()
         super().run()
 
 def run():
