@@ -13,16 +13,18 @@ class UmayDeamon(Handler):
         self.current=None
         self.umay_port=None
         super(UmayDeamon, self).__init__()
+        self.parser=Parser(self)
 
     def setup(self):
 
         super().setup()
-        self.parser=Parser(self)
-        self.setConnect(self.umay_port)
+        self.setConnect(
+                socket_kind='bind',
+                port=self.umay_port
+                )
 
     def register(self, data):
 
-        raise
         for mode, d in data.items():
 
             port=d.get('port', None)
@@ -38,9 +40,8 @@ class UmayDeamon(Handler):
             socket.connect(
                     f'tcp://localhost:{port}')
             self.sockets[mode]=(socket, kind)
-        print(mode, port, paths)
-        # if any(paths):
-            # self.parser.add(mode, paths)
+        if any(paths):
+            self.parser.add(mode, paths)
 
     def parse(self, **kwargs):
 

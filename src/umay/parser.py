@@ -43,13 +43,12 @@ class Parser:
             self.modes[mode]=[]
         i, e = [], []
         for doc in paths:
-            if doc:
-                for b in doc:
-                    btype = b.get("type")
-                    if btype == "entity":
-                        e.append(Entity.from_yaml(b))
-                    elif btype == "intent":
-                        i.append(Intent.from_yaml(b))
+            for b in doc:
+                btype = b.get("type")
+                if btype == "entity":
+                    e.append(Entity.from_yaml(b))
+                elif btype == "intent":
+                    i.append(Intent.from_yaml(b))
         for p in i:
             self.modes[mode]+=[p.intent_name]
         self.intents+=i
