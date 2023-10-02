@@ -1,6 +1,38 @@
 ---
+type: entity
+name: keyword
+automatically_extensible: yes
+
+---
+type: entity
+name: digit
+automatically_extensible: yes
+values:
+  - ['1', one, monday, january]
+  - ['2', two, tuesday, february]
+  - ['3', three, wednesday, march]
+  - ['4', four, thursday, april]
+  - ['5', five, friday, may]
+  - ['6', six, saturday, june]
+  - ['7', seven, sunday, july]
+  - ['8', eight, august]
+  - ['9', nine, september]
+  - ['10', ten, october]
+  - ['11', eleven, november]
+  - ['12', twelve, december]
+
+---
+type: entity
+name: lan
+automatically_extensible: yes
+values:
+  - ['de', german]
+  - ['us', english]
+  - ['ru', russian]
+  - ['tr', turkish] 
+---
 type: intent
-name: Generic_setMode
+name: setMode
 slots:
   - name: keyworkd
     entity: keyword 
@@ -15,62 +47,62 @@ utterances:
 
 ---
 type: intent
-name: Generic_open
+name: open
 utterances:
   - open
 
 ---
 type: intent
-name: Generic_close
+name: close
 utterances:
   - close
 
 ---
 type: intent
-name: Generic_hide
+name: hide
 utterances:
   - hide
 
 ---
 type: intent
-name: Generic_show
+name: show
 utterances:
   - show
 
 ---
 type: intent
-name: Generic_quit
+name: quit
 utterances:
   - quit
 
 ---
 type: intent
-name: Generic_done
+name: done
 utterances:
   - done
 
 ---
 type: intent
-name: Generic_choose
+name: choose
 utterances:
   - choose
     
 ---
 type: intent
-name: Generic_fullscreen
+name: fullscreen
 utterances:
   - full screen
   - fullscreen 
 
 ---
 type: intent
-name: Generic_cancel
+name: cancel
 utterances:
   - cancel
 
 ---
 type: intent
-name: Generic_forward
+name: forward
 slots:
   - name: digit
     entity: snips/number 
@@ -81,7 +113,7 @@ utterances:
 
 ---
 type: intent
-name: Generic_backward
+name: backward
 slots:
   - name: digit
     entity: snips/number 
@@ -92,7 +124,7 @@ utterances:
 
 ---
 type: intent
-name: Generic_next
+name: next
 slots:
   - name: digit
     entity: snips/number 
@@ -103,7 +135,7 @@ utterances:
 
 ---
 type: intent
-name: Generic_previous
+name: previous
 slots:
   - name: digit
     entity: snips/number 
@@ -114,7 +146,7 @@ utterances:
 
 ---
 type: intent
-name: Generic_top
+name: top
 slots:
   - name: digit
     entity: snips/number 
@@ -125,7 +157,7 @@ utterances:
 
 ---
 type: intent
-name: Generic_bottom
+name: bottom
 slots:
   - name: digit
     entity: snips/number 
@@ -136,13 +168,13 @@ utterances:
 
 ---
 type: intent
-name: Generic_confirm
+name: confirm
 utterances:
   - okay
 
 ---
 type: intent
-name: Generic_zoomIn 
+name: zoomIn 
 slots:
   - name: digit
     entity: snips/number 
@@ -153,7 +185,7 @@ utterances:
 
 ---
 type: intent
-name: Generic_zoomOut 
+name: zoomOut 
 slots:
   - name: digit
     entity: snips/number 
@@ -164,115 +196,115 @@ utterances:
 
 ---
 type: intent
-name: Generic_check 
+name: check 
 utterances:
   - check
 
 ---
 type: intent
-name: Generic_start
+name: start
 utterances:
   - start
 
 ---
 type: intent
-name: Generic_start
+name: start
 utterances:
   - stop
 
 ---
 type: intent
-name: Generic_start
+name: start
 utterances:
   - pause
 
 ---
 type: intent
-name: Generic_start
+name: start
 utterances:
   - play
 
 ---
 type: intent
-name: Generic_save
+name: save
 utterances:
   - save
 
 ---
 type: intent
-name: Generic_finish
+name: finish
 utterances:
   - finish
 
 ---
 type: intent
-name: Generic_refresh
+name: refresh
 utterances:
   - refresh
 
 ---
 type: intent
-name: Generic_search
+name: search
 utterances:
   - search
 
 ---
 type: intent
-name: Generic_toggle
+name: toggle
 utterances:
   - toggle
 
 ---
 type: intent
-name: Generic_activate
+name: activate
 utterances:
   - activate
 
 ---
 type: intent
-name: Generic_deactivate
+name: deactivate
 utterances:
   - deactivate
 
 ---
 type: intent
-name: Generic_menu
+name: menu
 utterances:
   - menu
 
 ---
 type: intent
-name: Generic_help
+name: help
 utterances:
   - help
 
 ---
 type: intent
-name: Generic_command
+name: command
 utterances:
   - command
 
 ---
 type: intent
-name: Generic_rename
+name: rename
 utterances:
   - rename
 
 ---
 type: intent
-name: Generic_main
+name: main
 utterances:
   - main
 
 ---
 type: intent
-name: Generic_remove
+name: remove
 utterances:
   - remove
 
 ---
 type: intent
-name: Generic_up
+name: up
 slots:
   - name: digit
     entity: snips/number 
@@ -283,7 +315,7 @@ utterances:
 
 ---
 type: intent
-name: Generic_down
+name: down
 slots:
   - name: digit
     entity: snips/number 
@@ -294,7 +326,7 @@ utterances:
 
 ---
 type: intent
-name: Generic_left
+name: left
 slots:
   - name: digit
     entity: snips/number 
@@ -305,7 +337,7 @@ utterances:
 
 ---
 type: intent
-name: Generic_right
+name: right
 slots:
   - name: digit
     entity: snips/number 
@@ -313,8 +345,3 @@ utterances:
   - right 
   - right [digit](eight) 
   - right [digit](five) times
-
----
-type: entity
-name: keyword
-automatically_extensible: yes

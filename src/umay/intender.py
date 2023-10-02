@@ -28,11 +28,11 @@ class Intender(SnipsNLUEngine):
 
     def set_intents(self):
         if self.modes_path and os.path.exists(self.modes_path):
-            for root, dirs, files in os.walk(self.modes_path):
-                path = root.split(os.sep)
-                for file in files:
+            for r, d, f in os.walk(self.modes_path):
+                path = r.split(os.sep)
+                for file in f:
                     if not file.endswith('yaml'): continue
-                    self.intent_files+=[f'{root}/{file}']
+                    self.intent_files+=[f'{r}/{file}']
 
     def fit_parser(self):
         self.dataset = Dataset.from_yaml_files(language='en', filenames=self.intent_files)

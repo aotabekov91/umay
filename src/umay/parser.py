@@ -1,10 +1,10 @@
 from queue import Queue
 from threading import Thread
 
-# from snips_nlu import SnipsNLUEngine
-# from snips_nlu.dataset import Dataset
-# from snips_nlu.dataset.entity import Entity
-# from snips_nlu.dataset.intent import Intent
+from snips_nlu import SnipsNLUEngine
+from snips_nlu.dataset import Dataset
+from snips_nlu.dataset.entity import Entity
+from snips_nlu.dataset.intent import Intent
 
 class Parser:
 
@@ -19,14 +19,14 @@ class Parser:
         self.entities=[]
         self.queue=Queue()
         self.handler=handler
-        # self.engine=SnipsNLUEngine()
+        self.engine=SnipsNLUEngine()
 
     def run(self):
 
         def listen():
             while self.handler.running:
                 data=self.queue.get()
-                result=self.parse(**data)
+                result=self._parse(**data)
                 self.handler.act(result)
 
         thread=Thread(target=listen)
@@ -34,26 +34,41 @@ class Parser:
         thread.start()
         return thread
 
-    def serve(self, **kwargs):
+    def parse(self, **kwargs):
         self.queue.put(kwargs)
 
-    def add(self, mode, paths): 
+    def _parse(self, 
+              text, 
+              prob=.5, 
+              count=1,
+              mode=None, 
+              plug=None,
+              ):
+
+        intents=None
+        if mode:
+            mode_intents=self.modes.get(mode, None)
+            if plug:
+                intents=mode_intents[plug]
+            else:
+                intents=list(mode_intents.items())
+        return self.engine.parse(
+                text, 
+                intents=intents)
+
+    def register(self, mode, units): 
 
         if not mode in self.modes: 
-            self.modes[mode]=[]
-        i, e = [], []
-        for doc in paths:
-            for b in doc:
-                btype = b.get("type")
-                if btype == "entity":
-                    e.append(Entity.from_yaml(b))
-                elif btype == "intent":
-                    i.append(Intent.from_yaml(b))
-        for p in i:
-            self.modes[mode]+=[p.intent_name]
-        self.intents+=i
-        self.entities+=e
-        self.fit()
+            self.modes[mode]={}
+        for n, us in units.items():
+            for u in us:
+                if u.get("type") == "entity":
+                    l=Entity.from_yaml(u)
+                    self.entities.append(l)
+                elif u.get("type") == "intent":
+                    l=Intent.from_yaml(u)
+                    self.intents.append(l)
+                    self.modes[mode][n]=l
 
     def fit(self): 
 
@@ -62,15 +77,3 @@ class Parser:
                 self.intents, 
                 self.entities)
         self.engine.fit(self.dataset.json)
-
-    def parse(self, 
-              text, 
-              prob=.5, 
-              count=1,
-              mode=None, 
-              ):
-
-        mintents=self.modes.get(mode, None)
-        return self.engine.parse(
-                text, 
-                intents=mintents)

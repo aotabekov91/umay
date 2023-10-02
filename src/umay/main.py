@@ -6,7 +6,6 @@ class UmayDeamon(Handler):
 
     def __init__(self): 
 
-        self.modes=[]
         self.sockets={}
         self.keywords={}
         self.prev=None
@@ -23,29 +22,24 @@ class UmayDeamon(Handler):
                 port=self.umay_port
                 )
 
-    def register(self, data):
+    def register(
+            self, 
+            name=None,
+            port=None,
+            kind='PUSH',
+            units=[]):
 
-        for mode, d in data.items():
-
-            port=d.get('port', None)
-            paths=d.get('paths', [])
-            kind=d.get('kind', 'PUSH')
-            keyword=d.get('keyword', None)
-            
-        self.modes+=[mode]
-        if keyword:
-            self.keywords[keyword]=mode
         if port:
             socket=self.connect.get(kind)
             socket.connect(
                     f'tcp://localhost:{port}')
-            self.sockets[mode]=(socket, kind)
-        if any(paths):
-            self.parser.add(mode, paths)
+            self.sockets[name]=(socket, kind)
+        if units:
+            self.parser.register(name, units)
+            self.parser.fit()
 
     def parse(self, **kwargs):
-
-        self.parser.serve(**kwargs)
+        self.parser.parse(**kwargs)
 
     def getAction(self, result):
 

@@ -9,6 +9,7 @@ class Generic(Plug):
         self.umay_port=umay_port
         super().__init__()
         self.umay=Umay(
+                app=self,
                 umay_port=self.umay_port)
         self.load()
 
