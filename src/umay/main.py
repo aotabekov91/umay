@@ -4,11 +4,11 @@ class UmayDeamon(Handler):
 
     def __init__(self): 
 
-        self.sockets={}
-        self.keywords={}
         self.prev=None
         self.current=None
         self.umay_port=None
+        self.sockets={}
+        self.keywords={}
         super(UmayDeamon, self).__init__()
 
     def setup(self):
@@ -22,14 +22,14 @@ class UmayDeamon(Handler):
 
     def setParserConnect(self):
 
-        self.psocket=self.connect.get('PUSH')
+        self.psocket=self.connect.get('REQ')
         self.psocket.connect(
                 f'tcp://localhost:{self.parser_port}')
 
     def register(
             self, 
-            mode=None,
-            port=None,
+            name=None,
+                port=None,
             kind='PUSH',
             units=[]):
 
@@ -37,17 +37,27 @@ class UmayDeamon(Handler):
             socket=self.connect.get(kind)
             socket.connect(
                     f'tcp://localhost:{port}')
-            self.sockets[mode]=(socket, kind, port)
+            self.sockets[name]=(socket, kind, port)
         if units:
-            cmd={'register':{'mode':mode, 'units':units}}
+            cmd={'register':{'mode':name, 'units':units}}
             self.psocket.send_json(cmd)
-            cmd={'fit':{}}
-            self.psocket.send_json(cmd)
+            res=self.psocket.recv_json()
+            print(res)
+            self.fit()
+
+    def fit(self):
+
+        self.psocket.send_json({'fit':{}})
+        res=self.psocket.recv_json()
+        print(res)
 
     def parse(self, **kwargs):
 
         cmd={'parse':kwargs}
         self.psocket.send_json(cmd)
+        res=self.psocket.recv_json()
+        print(res)
+        self.act(res['parse'])
 
     def getAction(self, result):
 
@@ -57,7 +67,7 @@ class UmayDeamon(Handler):
         if iname:
             req={}
             d=iname.split('_', 1)
-            mode, action = d[0], d[1], d[2]
+            mode, action = d[0], d[1]
             for s in slots:
                 v=s['value']['value']
                 req[s['slotName']]=v

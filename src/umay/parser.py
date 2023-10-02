@@ -1,4 +1,3 @@
-from queue import Queue
 from threading import Thread
 
 from snips_nlu import SnipsNLUEngine
@@ -6,38 +5,28 @@ from snips_nlu.dataset import Dataset
 from snips_nlu.dataset.entity import Entity
 from snips_nlu.dataset.intent import Intent
 
-class Parser:
+from plug.plugs.handler import Handler
 
-    def __init__(
-            self, 
-            handler,
-            lan='en'):
+class Parser(Handler):
+
+    def __init__(self, lan='en'):
 
         self.lan=lan
         self.modes={}
         self.intents=[]
         self.entities=[]
-        self.queue=Queue()
-        self.handler=handler
         self.engine=SnipsNLUEngine()
+        super().__init__()
 
-    def run(self):
+    def setup(self):
 
-        def listen():
-            while self.handler.running:
-                data=self.queue.get()
-                result=self._parse(**data)
-                self.handler.act(result)
+        super().setup()
+        self.setConnect(
+                kind='REP',
+                socket_kind='bind',
+                port=self.parser_port)
 
-        thread=Thread(target=listen)
-        thread.deamon=True
-        thread.start()
-        return thread
-
-    def parse(self, **kwargs):
-        self.queue.put(kwargs)
-
-    def _parse(self, 
+    def parse(self, 
               text, 
               prob=.5, 
               count=1,
@@ -69,6 +58,7 @@ class Parser:
                         l=Intent.from_yaml(u)
                         self.intents.append(l)
                         self.modes[mode][n]=l
+        return {'status':'ok'}
 
     def fit(self): 
 
@@ -77,3 +67,15 @@ class Parser:
                 self.intents, 
                 self.entities)
         self.engine.fit(self.dataset.json)
+        return {'status': 'ok'}
+
+    def handle(self, req):
+
+        r=super().handle(req)
+        print(r)
+        self.connect.socket.send_json(r)
+
+def run():
+
+    parser=Parser()
+    parser.run()

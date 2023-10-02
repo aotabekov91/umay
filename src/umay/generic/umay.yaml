@@ -345,3 +345,35 @@ utterances:
   - right 
   - right [digit](eight) 
   - right [digit](five) times
+
+---
+type: intent
+name: listen
+slots:
+  - name: keyword
+    entity: keyword 
+utterances:
+  - listen 
+  - listen [keyword](file browser) 
+  - [keyword](card) listen
+
+---
+type: intent
+name: delisten
+slots:
+  - name: keyword
+    entity: keyword 
+utterances:
+  - delisten 
+  - delisten [keyword](file browser) 
+  - [keyword](card) delisten
+
+---
+type: intent
+name: setMode
+slots:
+  - name: mode
+    entity: keyword 
+utterances:
+  - mode [mode](lura) 
+  - [mode](willmann) listen

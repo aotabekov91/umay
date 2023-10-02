@@ -14,6 +14,7 @@ plug = {git = "https://github.com/aotabekov91/plug", branch='main'}
 [tool.poetry.scripts]
 umayc = "umay.cli:run"
 umayd = "umay.main:run"
+umayp = "umay.parser:run"
 
 [build-system]
 requires = ["poetry-core"]

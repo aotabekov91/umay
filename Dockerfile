@@ -8,4 +8,4 @@ run python3 -m snips_nlu download en
 
 copy . . 
 run pip install .
-cmd ["umayd"]
+# cmd ["umayp"]
