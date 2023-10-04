@@ -1,24 +1,34 @@
+from umay.normal import Normal
+from plug.plugs.umay_plug import Umay
 from plug.plugs.handler import Handler
 
-class UmayDeamon(Handler):
+class UmayDaemon(Handler):
 
-    def __init__(self): 
+    def __init__(
+            self,
+            handler_port=None,
+            ): 
 
-        self.prev=None
-        self.current=None
-        self.umay_port=None
         self.sockets={}
-        self.keywords={}
-        super(UmayDeamon, self).__init__()
+        self.current=None
+        self.handler_port=handler_port
+        super(UmayDaemon, self).__init__()
+        self.setDefaultPlugs()
 
     def setup(self):
 
         super().setup()
         self.setConnect(
                 socket_kind='bind',
-                port=self.umay_port
-                )
+                port=self.handler_port)
         self.setParserConnect()
+        self.setPlugman()
+
+    def setDefaultPlugs(self):
+
+        default=[Normal, Umay]
+        picks=self.plugman.getPicks()
+        self.plugman.loadPicks(default+picks)
 
     def setParserConnect(self):
 
@@ -28,35 +38,40 @@ class UmayDeamon(Handler):
 
     def register(
             self, 
-            name=None,
-                port=None,
+            units=[],
+            app=None, 
+            port=None,
             kind='PUSH',
-            units=[]):
+            keywords=[]):
 
         if port:
             socket=self.connect.get(kind)
             socket.connect(
                     f'tcp://localhost:{port}')
-            self.sockets[name]=(socket, kind, port)
+            self.sockets[app]=(socket, kind, port)
         if units:
-            cmd={'register':{'mode':name, 'units':units}}
+            cmd={'register' : {
+                        'app' : app, 
+                        'units' : units,
+                        'keywords': keywords,
+                        }
+                    }
             self.psocket.send_json(cmd)
-            res=self.psocket.recv_json()
-            print(res)
-            self.fit()
+            self.psocket.recv_json()
+            self.psocket.send_json({'fit':{}})
+            self.psocket.recv_json()
 
     def fit(self):
 
-        self.psocket.send_json({'fit':{}})
-        res=self.psocket.recv_json()
-        print(res)
+        self.psocket.send_json(
+                {'fit':{}})
+        self.psocket.recv_json()
 
     def parse(self, **kwargs):
 
         cmd={'parse':kwargs}
         self.psocket.send_json(cmd)
         res=self.psocket.recv_json()
-        print(res)
         self.act(res['parse'])
 
     def getAction(self, result):
@@ -67,34 +82,30 @@ class UmayDeamon(Handler):
         if iname:
             req={}
             d=iname.split('_', 1)
-            mode, action = d[0], d[1]
+            app, action = d[0], d[1]
             for s in slots:
                 v=s['value']['value']
                 req[s['slotName']]=v
-            return mode, {action: req}
+            return app, {action: req}
 
-    def act(self, result):
+    def act(self, request):
 
-        action=self.getAction(result)
+        action=self.getAction(request)
         if action:
-            m, r = action
-            if m!='Generic': 
-                self.current=m
-            con=self.sockets.get(
-                    self.current, None)
-            if con:
-                socket, kind, port = con
-                print('Connection: ', con)
-                socket.send_json(r)
-        print(action, self.current)
-        print(self.sockets)
+            a, r = action
+            self.setAction(a, r)
 
-    def run(self):
+    def setAction(self, app, action):
 
-        self.running=True
-        super().run()
+        con=self.sockets.get(app, None)
+        if con:
+            socket, kind, port = con
+            socket.send_json(action)
+
+    def handle(self, request):
+        super().handle(request)
 
 def run():
 
-    app=UmayDeamon()
+    app=UmayDaemon()
     app.run()

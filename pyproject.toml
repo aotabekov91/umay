@@ -12,8 +12,8 @@ plug = {git = "https://github.com/aotabekov91/plug", branch='main'}
 # plug = {path = "/home/adam/code/plug", develop = true}
 
 [tool.poetry.scripts]
-umayc = "umay.cli:run"
 umayd = "umay.main:run"
+umayc = "umay.cli:run"
 umayp = "umay.parser:run"
 
 [build-system]

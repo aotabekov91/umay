@@ -1,10 +1,5 @@
 ---
 type: entity
-name: keyword
-automatically_extensible: yes
-
----
-type: entity
 name: digit
 automatically_extensible: yes
 values:
@@ -30,20 +25,7 @@ values:
   - ['us', english]
   - ['ru', russian]
   - ['tr', turkish] 
----
-type: intent
-name: setMode
-slots:
-  - name: keyworkd
-    entity: keyword 
-utterances:
-  - set [keyword](keyboard)
-  - set [keyword](player)
-  - set [keyword](window)
-  - set [keyword](lura)
-  - set [keyword](feh)
-  - set [keyword](vim)
-  - set [keyword](tmux)
+
 
 ---
 type: intent
@@ -194,11 +176,6 @@ utterances:
   - zoom out [digit](ten)
   - zoom out [digit](ten) times
 
----
-type: intent
-name: check 
-utterances:
-  - check
 
 ---
 type: intent
@@ -348,32 +325,34 @@ utterances:
 
 ---
 type: intent
-name: listen
-slots:
-  - name: keyword
-    entity: keyword 
-utterances:
-  - listen 
-  - listen [keyword](file browser) 
-  - [keyword](card) listen
-
----
-type: intent
-name: delisten
-slots:
-  - name: keyword
-    entity: keyword 
-utterances:
-  - delisten 
-  - delisten [keyword](file browser) 
-  - [keyword](card) delisten
-
----
-type: intent
 name: setMode
 slots:
   - name: mode
-    entity: keyword 
+    entity: mode 
 utterances:
-  - mode [mode](lura) 
-  - [mode](willmann) listen
+  - activate [mode](file browser) 
+  - activate [mode](cards) 
+  - activate [mode](files) 
+  - activate [mode](normal) 
+
+---
+type: intent
+name: setApp
+slots:
+  - name: app
+    entity: app 
+utterances:
+  - app [app](keyboard)
+  - app [app](player)
+  - app [app](window)
+  - app [app](lura)
+  - app [app](feh)
+  - app [app](vim)
+  - app [app](tmux)
+  - app [app](willmann)
+
+---
+type: intent
+name: checkApp
+utterances:
+  - check

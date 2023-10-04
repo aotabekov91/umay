@@ -102,7 +102,7 @@ description = "Plugin-based application framework"
 optional = false
 python-versions = "^3.8"
 files = []
-develop = false
+develop = true
 
 [package.dependencies]
 gitpython = ">=3.1.32"
@@ -114,10 +114,8 @@ tomli = ">=2.0.1"
 qt = ["PyQt5 (>=5.15.6)", "gizmo @ git+https://github.com/aotabekov91/gizmo@main", "pynput (>=1.7.6)"]
 
 [package.source]
-type = "git"
-url = "https://github.com/aotabekov91/plug"
-reference = "main"
-resolved_reference = "25ad9f0a509daa24bccfdc00d46d2db3ead63297"
+type = "directory"
+url = "../plug"
 
 [[package]]
 name = "pycparser"
@@ -319,4 +317,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "5eae38147d782f38d064ff77027c7d86d18539cc93351554ac52f106061b8e59"
+content-hash = "633bbff7137c76245743891a99854696ca491b288f88cfee289784748c2d18dc"

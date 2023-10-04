@@ -11,8 +11,10 @@ class Parser(Handler):
 
     def __init__(self, lan='en'):
 
+        self.apps={}
         self.lan=lan
-        self.modes={}
+        self.app_keys=[]
+        self.mode_keys=[]
         self.intents=[]
         self.entities=[]
         self.engine=SnipsNLUEngine()
@@ -30,35 +32,56 @@ class Parser(Handler):
               text, 
               prob=.5, 
               count=1,
-              mode=None, 
-              plug=None,
+              app=None, 
+              mode=None,
               ):
 
         intents=None
-        if mode:
-            mode_intents=self.modes.get(mode, None)
-            if plug:
-                intents=mode_intents[plug]
+        if app:
+            intents=self.apps.get(
+                    app, None)
+            if mode:
+                intents=intents[mode]
             else:
-                intents=list(mode_intents.items())
+                intents=list(intents.items())
         return self.engine.parse(
-                text, 
-                intents=intents)
+                text, intents=intents)
 
-    def register(self, mode, units): 
+    def register(self, app, units, keywords): 
 
-        if not mode in self.modes: 
-            self.modes[mode]={}
+        if not app in self.apps: 
+            self.apps[app]={}
+            self.app_keys+=[keywords]
             for n, us in units.items():
-                for u in us:
-                    if u.get("type") == "entity":
-                        l=Entity.from_yaml(u)
+                for i in us:
+                    unit=i['unit']
+                    self.mode_keys+=[i['keywords']]
+                    if unit.get("type") == "entity":
+                        l=Entity.from_yaml(unit)
                         self.entities.append(l)
-                    elif u.get("type") == "intent":
-                        l=Intent.from_yaml(u)
+                    elif unit.get("type") == "intent":
+                        l=Intent.from_yaml(unit)
                         self.intents.append(l)
-                        self.modes[mode][n]=l
+                        self.apps[app][n]=l
+            self.updateKeywordEntities()
         return {'status':'ok'}
+
+    def updateKeywordEntities(self):
+
+        app_ent={
+                'name': 'app', 
+                'type': 'entity', 
+                'values': self.app_keys,
+                'automatically_extensible': False}
+        mode_ent={
+                'name': 'mode',
+                'type': 'entity', 
+                'values': self.mode_keys,
+                'automatically_extensible': False}
+        m=Entity.from_yaml(app_ent)
+        p=Entity.from_yaml(mode_ent)
+        self.entities.append(m)
+        self.entities.append(p)
 
     def fit(self): 
 
@@ -67,12 +90,12 @@ class Parser(Handler):
                 self.intents, 
                 self.entities)
         self.engine.fit(self.dataset.json)
-        return {'status': 'ok'}
+        print('Fitted dataset')
+        return {'status': 'ok', 'action': 'fitted'}
 
     def handle(self, req):
 
         r=super().handle(req)
-        print(r)
         self.connect.socket.send_json(r)
 
 def run():
