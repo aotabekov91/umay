@@ -13,10 +13,11 @@ class Parser(Handler):
 
         self.apps={}
         self.lan=lan
-        self.app_keys=[]
-        self.mode_keys=[]
         self.intents=[]
         self.entities=[]
+        self.mode_keys={}
+        self.app_keys=set()
+        self.keywords={}
         self.engine=SnipsNLUEngine()
         super().__init__()
 
@@ -51,11 +52,12 @@ class Parser(Handler):
 
         if not app in self.apps: 
             self.apps[app]={}
-            self.app_keys+=[keywords]
+            self.keywords[keywords]=set()
             for n, us in units.items():
                 for i in us:
                     unit=i['unit']
-                    self.mode_keys+=[i['keywords']]
+                    self.keywords[keywords].add(
+                            i['keywords'])
                     if unit.get("type") == "entity":
                         l=Entity.from_yaml(unit)
                         self.entities.append(l)
@@ -66,17 +68,24 @@ class Parser(Handler):
             self.updateKeywordEntities()
         return {'status':'ok'}
 
+    def getKeywords(self):
+
+        return {
+                'status': 'ok', 
+                'keywords': self.keywords
+               }
+
     def updateKeywordEntities(self):
 
         app_ent={
                 'name': 'app', 
                 'type': 'entity', 
-                'values': self.app_keys,
+                'values': list(self.keywords.keys()),
                 'automatically_extensible': False}
         mode_ent={
                 'name': 'mode',
                 'type': 'entity', 
-                'values': self.mode_keys,
+                'values': list(self.keywords.values()),
                 'automatically_extensible': False}
         m=Entity.from_yaml(app_ent)
         p=Entity.from_yaml(mode_ent)

@@ -1,6 +1,6 @@
 ---
 type: entity
-name: digit
+name: ordinal
 automatically_extensible: yes
 values:
   - ['1', one, monday, january]
@@ -311,6 +311,17 @@ utterances:
   - left 
   - left [digit](five) times
   - left [digit](eight) 
+
+---
+type: intent
+name: goto
+slots:
+  - name: digit
+    entity: snips/number 
+utterances:
+  - go to 
+  - go to [digit](eight) 
+  - go to [digit](five) times
 
 ---
 type: intent

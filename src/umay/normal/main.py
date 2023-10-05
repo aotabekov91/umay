@@ -18,7 +18,7 @@ class Normal(Plug):
 
     def handle(self, request):
 
-        msg='Rerouting request to: '
+        msg=f'Rerouting {request} to: '
         print(msg, self.current)
         self.app.setAction(
                     self.current, request)
