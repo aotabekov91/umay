@@ -1,34 +1,45 @@
+from queue import Queue
 from threading import Thread
 
 from snips_nlu import SnipsNLUEngine
 from snips_nlu.dataset import Dataset
 from snips_nlu.dataset.entity import Entity
 from snips_nlu.dataset.intent import Intent
+from snips_nlu.cli.download import download
 
-from plug.plugs.handler import Handler
+class Parser:
 
-class Parser(Handler):
-
-    def __init__(self, lan='en'):
+    def __init__(self, daemon, lan='en'):
 
         self.apps={}
         self.lan=lan
         self.intents=[]
         self.entities=[]
-        self.mode_keys={}
-        self.app_keys=set()
         self.keywords={}
+        self.queue=Queue()
+        self.daemon=daemon
+        self.downloadLan(lan)
         self.engine=SnipsNLUEngine()
-        super().__init__()
+        self.listen()
 
-    def setup(self):
+    def downloadLan(self, lan):
+        download(lan)
 
-        super().setup()
-        self.setConnect(
-                kind='REP',
-                socket_kind='bind',
-                port=self.parser_port)
+    def listen(self):
 
+        def run():
+            self.listening=True
+            while self.listening:
+                text, cand = self.queue.get()
+                parsed=self.engine.parse(
+                        text, intents=cand)
+                self.act(parsed)
+
+        thread=Thread(target=run)
+        thread.daemon=True
+        thread.start()
+        return thread
+    
     def parse(self, 
               text, 
               prob=.5, 
@@ -37,60 +48,73 @@ class Parser(Handler):
               mode=None,
               ):
 
-        intents=None
-        if app:
-            intents=self.apps.get(
-                    app, None)
-            if mode:
-                intents=intents[mode]
-            else:
-                intents=list(intents.items())
-        return self.engine.parse(
-                text, intents=intents)
+        cand=self.apps.get(
+                app, None)
+        if cand:
+            cand=cand.get(
+                    mode, 
+                    list(cand.items()))
+        self.queue.put((text, cand))
+        return {'status': 'ok', 
+                'info': f'received to parse {text}'}
 
-    def register(self, app, units, keywords): 
+    def act(self, parsed):
+
+        action=self.simplify(parsed)
+        if action:
+            app, req = action
+            self.daemon.act(app, req)
+
+    def simplify(self, result):
+
+        intent=result.get('intent', {})
+        slots=result.get('slots', [])
+        iname=intent.get('intentName', None)
+        if iname:
+            req={}
+            d=iname.split('_', 1)
+            app, action = d[0], d[1]
+            for s in slots:
+                v=s['value']['value']
+                req[s['slotName']]=v
+            return app, {action: req}
+
+    def register(self, 
+                 app, 
+                 units, 
+                 app_keys,
+                 mode_keys): 
 
         if not app in self.apps: 
             self.apps[app]={}
-            self.keywords[keywords]=set()
+            self.keywords[app] = {
+                    'app': app_keys, 
+                    'mode': mode_keys}
             for n, us in units.items():
                 for i in us:
-                    unit=i['unit']
-                    self.keywords[keywords].add(
-                            i['keywords'])
-                    if unit.get("type") == "entity":
-                        l=Entity.from_yaml(unit)
+                    if i.get('type') == "entity":
+                        l=Entity.from_yaml(i)
                         self.entities.append(l)
-                    elif unit.get("type") == "intent":
-                        l=Intent.from_yaml(unit)
+                    elif i.get('type') == "intent":
+                        l=Intent.from_yaml(i)
                         self.intents.append(l)
                         self.apps[app][n]=l
-            self.updateKeywordEntities()
-        return {'status':'ok'}
+            self.update(app)
+            self.fit()
+        return {'status':'ok', 'info': f'Umay registred {app}'}
 
-    def getKeywords(self):
+    def update(self, app):
 
-        return {
-                'status': 'ok', 
-                'keywords': self.keywords
-               }
-
-    def updateKeywordEntities(self):
-
-        app_ent={
-                'name': 'app', 
-                'type': 'entity', 
-                'values': list(self.keywords.keys()),
-                'automatically_extensible': False}
-        mode_ent={
-                'name': 'mode',
-                'type': 'entity', 
-                'values': list(self.keywords.values()),
-                'automatically_extensible': False}
-        m=Entity.from_yaml(app_ent)
-        p=Entity.from_yaml(mode_ent)
-        self.entities.append(m)
-        self.entities.append(p)
+        akeys=self.keywords[app]['app']
+        mkeys=self.keywords[app]['mode']
+        for i in [akeys, mkeys]:
+            ent={'name': 'app', 
+                 'type': 'entity', 
+                 'values': i,
+                 'automatically_extensible': False}
+            m=Entity.from_yaml(ent)
+            if not m in self.entities:
+                self.entities.append(m)
 
     def fit(self): 
 
@@ -99,15 +123,9 @@ class Parser(Handler):
                 self.intents, 
                 self.entities)
         self.engine.fit(self.dataset.json)
-        print('Fitted dataset')
         return {'status': 'ok', 'action': 'fitted'}
 
-    def handle(self, req):
+    def getKeywords(self):
 
-        r=super().handle(req)
-        self.connect.socket.send_json(r)
-
-def run():
-
-    parser=Parser()
-    parser.run()
+        return {'status': 'ok', 
+                'keywords': self.keywords}

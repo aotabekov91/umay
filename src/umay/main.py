@@ -1,111 +1,73 @@
-from umay.normal import Normal
-from plug.plugs.umay_plug import Umay
+from umay.parser import Parser
 from plug.plugs.handler import Handler
 
-class UmayDaemon(Handler):
-
-    def __init__(
-            self,
-            handler_port=None,
-            ): 
-
-        self.sockets={}
-        self.current=None
-        self.handler_port=handler_port
-        super(UmayDaemon, self).__init__()
-        self.setDefaultPlugs()
+class Daemon(Handler):
 
     def setup(self):
 
         super().setup()
         self.setConnect(
-                socket_kind='bind',
-                port=self.handler_port)
-        self.setParserConnect()
-        self.setPlugman()
-
-    def setDefaultPlugs(self):
-
-        default=[Normal, Umay]
-        picks=self.plugman.getPicks()
-        self.plugman.loadPicks(default+picks)
-
-    def setParserConnect(self):
-
-        self.psocket=self.connect.get('REQ')
-        self.psocket.connect(
-                f'tcp://localhost:{self.parser_port}')
+                kind='REP', 
+                socket_kind='bind', 
+                port=self.port)
+        self.prev=None
+        self.current=None
+        self.connections={}
+        self.parser=Parser(daemon=self)
 
     def register(
             self, 
-            units=[],
-            app=None, 
-            port=None,
-            kind='PUSH',
-            keywords=[]):
+            app, 
+            port,
+            kind,
+            units,
+            app_keys,
+            mode_keys):
 
-        if port:
-            socket=self.connect.get(kind)
-            socket.connect(
-                    f'tcp://localhost:{port}')
-            self.sockets[app]=(socket, kind, port)
-        if units:
-            cmd={'register' : {
-                        'app' : app, 
-                        'units' : units,
-                        'keywords': keywords,
-                        }
-                    }
-            self.psocket.send_json(cmd)
-            self.psocket.recv_json()
-            self.psocket.send_json({'fit':{}})
-            self.psocket.recv_json()
+        self.socketize(app, kind, port)
+        return self.parser.register(
+                app, units, app_keys, mode_keys)
+
+    def socketize(self, app, kind, port):
+
+        socket=self.connect.get(kind)
+        socket.connect(
+                f'tcp://localhost:{port}')
+        self.connections[app]=socket
+        return {'status': 'ok', 'info': f'socketized {app}'}
 
     def fit(self):
+        return self.parser.fit()
 
-        self.psocket.send_json(
-                {'fit':{}})
-        self.psocket.recv_json()
+    def getKeywords(self):
+        return self.parser.getKeywords()
 
     def parse(self, **kwargs):
+        return self.parser.parse(**kwargs)
+    
+    def setState(self, app):
 
-        cmd={'parse':kwargs}
-        self.psocket.send_json(cmd)
-        res=self.psocket.recv_json()
-        self.act(res['parse'])
+        self.current, self.prev=(app, self.current)
+        return self.getState()
 
-    def getAction(self, result):
+    def getState(self):
 
-        intent=result.get('intent', {})
-        slots=result.get('slots', [])
-        iname=intent.get('intentName', None)
-        if iname:
-            req={}
-            d=iname.split('_', 1)
-            app, action = d[0], d[1]
-            for s in slots:
-                v=s['value']['value']
-                req[s['slotName']]=v
-            return app, {action: req}
+        data=(self.current, self.prev)
+        return {'status': 'ok', 'data': data}
 
-    def act(self, request):
+    def act(self, app, action):
 
-        action=self.getAction(request)
-        if action:
-            a, r = action
-            self.setAction(a, r)
-
-    def setAction(self, app, action):
-
-        con=self.sockets.get(app, None)
-        if con:
-            socket, kind, port = con
-            socket.send_json(action)
-
-    def handle(self, request):
-        super().handle(request)
+        s=self.connections.get(app, None)
+        if s: 
+            self.setState(app)
+            s.send_json(action)
+            return {'status': 'ok', 
+                    'info': 'acted'}
+        else:
+            return {'status': 'nok', 
+                    'info': 'socket not found'}
 
 def run():
 
-    app=UmayDaemon()
+    app=Daemon()
     app.run()

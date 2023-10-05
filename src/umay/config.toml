@@ -1,19 +1,3 @@
 [Settings]
 
-parser_port=20002
-handler_port=19999
-
-[Umay.Settings]
-
-umay_port=19999
-
-[Plugman.Settings]
-
-install_requirements=true
-base = 'https://github.com'
-folder = '~/.config/umay/picky'
-
-[[Plugman.Picky]]
-
-pick = 'aotabekov91/umay_plugins'
-subdir = []
+port=19999
