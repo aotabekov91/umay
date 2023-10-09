@@ -7,6 +7,9 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.8"
+vosk = "^0.3"
+pyaudio = "^0.2"
+speechrecognition = "^3.10"
 plug = {git = "https://github.com/aotabekov91/plug", branch='main'}
 # plug = {path = "/home/adam/code/plug", develop = true}
 

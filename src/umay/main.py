@@ -1,9 +1,22 @@
 from queue import Queue
 from threading import Thread
 from umay.parser import Parser
+from umay.listener import Listener
 from plug.plugs.handler import Handler
 
 class Umay(Handler):
+
+    def __init__(
+            self, 
+            *args, 
+            **kwargs):
+
+        self.count=1
+        self.prob=.5
+        self.limit_app=None
+        self.limit_mode=None
+        super().__init__(
+                *args, **kwargs)
 
     def setup(self):
 
@@ -18,6 +31,11 @@ class Umay(Handler):
         self.queue=Queue()
         self.connections={}
         self.parser=Parser()
+        self.listener=Listener(
+                umay=self, 
+                config=self.config.get(
+                    'Listener', {})
+                )
 
     def simplify(self, result):
 
@@ -95,25 +113,26 @@ class Umay(Handler):
                 'keywords': self.parser.keywords
                }
 
-    def parse(self, 
-              text, 
-              prob=.5, 
-              count=1,
-              app=None, 
-              mode=None,
-              ):
+    def parse(self, text):
+
         cand=self.parser.apps.get(
-                app, None)
+                self.limit_app, None)
         if cand:
             cand=cand.get(
-                    mode, 
+                    self.limit_mode, 
                     list(cand.items()))
         self.queue.put((text, cand))
         return {
                 'status': 'ok', 
                 'info': f'received to parse {text}'
                }
-    
+
+    def setLimitApp(self, app=None):
+        self.limit_app=None
+
+    def setLimitMode(self, mode=None):
+        self.limit_mode=mode
+
     def setState(self, app):
 
         self.prev=self.current
@@ -149,6 +168,7 @@ class Umay(Handler):
 
         self.running=True
         self.listen()
+        self.listener.listen()
         super().run()
 
 def run():
