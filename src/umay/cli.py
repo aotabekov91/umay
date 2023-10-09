@@ -1,4 +1,5 @@
 from plug.plugs.cli import CLI
+from plug.utils.helpers import pretty_json
 
 class UmayCLI(CLI):
 
@@ -18,7 +19,7 @@ class UmayCLI(CLI):
                     {action: request},
                     self.socket
                     )
-            print(res)
+            print(pretty_json(res))
 
 def run():
     cli = UmayCLI()

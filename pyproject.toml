@@ -8,13 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.8"
 plug = {git = "https://github.com/aotabekov91/plug", branch='main'}
-numpy = {version = "==1.20.0", optional = true}
-snips-nlu = {version = "==0.20.2", optional = true}
-# plug = {path = "/home/adama/code/plug", develop = true}
 # plug = {path = "/home/adam/code/plug", develop = true}
-
-[tool.poetry.extras]
-daemon=["numpy", "snips-nlu"]
 
 [tool.poetry.scripts]
 umayc = "umay.cli:run"

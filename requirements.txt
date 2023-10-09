@@ -1,3 +1,0 @@
-cython>=3.0.2
-setuptools-rust>=1.7.0
-snips_nlu>=0.20.2
